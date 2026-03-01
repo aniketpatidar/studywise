@@ -1,0 +1,73 @@
+<% content_for :title, "My Materials | StudyWISE" %>
+
+<header class="mb-10 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6">
+  <div class="max-w-xl">
+    <h1 class="text-3xl font-extrabold text-[#2D2E32] tracking-tight">Your Library</h1>
+    <p class="text-[#6C6D70] font-medium leading-relaxed mt-2">Manage your study sources and let the AI generate targeted learning materials.</p>
+  </div>
+  <div class="flex-shrink-0">
+    <%= link_to new_material_path, class: "inline-flex items-center justify-center gap-3 px-8 py-4 bg-[#6C5DD3] text-white rounded-[24px] font-black text-sm tracking-tight hover:bg-[#5849C4] hover:-translate-y-1 transition-all shadow-2xl shadow-indigo-100 w-full sm:w-auto" do %>
+      <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4" />
+      </svg>
+      Upload New
+    <% end %>
+  </div>
+</header>
+
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 pb-20">
+  <% if @materials.any? %>
+    <% @materials.each do |material| %>
+      <div class="group bg-white border border-[#E8E9EB] rounded-[48px] p-8 shadow-sm transition-all hover:shadow-2xl hover:shadow-indigo-50/40 hover:border-[#6C5DD3]/20 flex flex-col h-full relative overflow-hidden">
+        <div class="absolute top-0 right-0 w-32 h-32 bg-[#6C5DD3]/5 rounded-full -mr-16 -mt-16 blur-2xl group-hover:bg-[#6C5DD3]/10 transition-colors"></div>
+        
+        <div class="relative z-10 flex grow flex-col">
+          <div class="w-14 h-14 bg-gray-50 group-hover:bg-white rounded-[24px] flex items-center justify-center text-2xl mb-8 transition-all group-hover:scale-110 shadow-sm border border-[#F1F2F4] text-[#6C5DD3]">
+            <% if material.source_type == 'url' %>
+              <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.828a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
+              </svg>
+            <% else %>
+              <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+              </svg>
+            <% end %>
+          </div>
+          
+          <h3 class="text-xl font-extrabold text-[#2D2E32] mb-4 group-hover:text-[#6C5DD3] transition-colors line-clamp-2 leading-tight tracking-tight"><%= material.title %></h3>
+          
+          <div class="flex flex-wrap items-center gap-3 mb-10">
+            <span class="px-3 py-1 bg-gray-50 border border-[#E8E9EB] rounded-full text-[9px] uppercase font-black tracking-widest text-[#6C6D70]"><%= material.source_type %></span>
+            <div class="flex items-center gap-2">
+              <div class="w-2 h-2 rounded-full <%= material.status == 'completed' ? 'bg-emerald-500 animate-pulse' : (material.status == 'processing' ? 'bg-amber-500 animate-bounce' : 'bg-rose-500') %>"></div>
+              <span class="text-[9px] font-black uppercase text-[#6C6D70] tracking-widest"><%= material.status %></span>
+            </div>
+          </div>
+
+          <div class="mt-auto flex items-center gap-3">
+            <%= link_to study_chat_material_path(material), class: "flex-grow py-4 bg-[#6C5DD3] text-white text-center rounded-[20px] font-black text-xs tracking-tight hover:bg-[#5849C4] transition-all shadow-xl shadow-indigo-100" do %>
+              Study Now
+            <% end %>
+            <%= link_to material_path(material), class: "p-4 bg-white border border-[#E8E9EB] rounded-[20px] text-[#6C6D70] hover:text-[#2D2E32] hover:border-[#6C5DD3] transition-all shadow-sm group-hover:shadow-md" do %>
+              <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+              </svg>
+            <% end %>
+          </div>
+        </div>
+      </div>
+    <% end %>
+  <% else %>
+    <div class="col-span-full py-20 flex flex-col items-center justify-center border-2 border-dashed border-[#E8E9EB] rounded-[64px] text-center bg-gray-50/30">
+      <div class="w-24 h-24 bg-white rounded-[32px] flex items-center justify-center text-5xl mb-8 shadow-sm grayscale opacity-30 text-[#6C5DD3]">
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-12 h-12" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 19a2 2 0 01-2-2V7a2 2 0 012-2h4l2 2h4a2 2 0 012 2v1m-6 9h6m-3-3v6" />
+        </svg>
+      </div>
+      <h3 class="text-2xl font-extrabold text-[#2D2E32] mb-3">Your library is waiting</h3>
+      <p class="text-[#6C6D70] text-sm max-w-sm leading-relaxed mb-10 px-6 font-medium">Upload your first material to begin your AI-powered study journey.</p>
+      <%= link_to "Upload First Material", new_material_path, class: "px-10 py-5 bg-[#6C5DD3] text-white rounded-[24px] font-black text-sm tracking-tight hover:bg-[#5849C4] hover:-translate-y-1 transition-all shadow-2xl shadow-indigo-100" %>
+    </div>
+  <% end %>
+</div>

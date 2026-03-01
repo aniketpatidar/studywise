@@ -1,0 +1,112 @@
+<% content_for :title, "#{@quiz.title} | StudyWISE" %>
+
+<div class="max-w-4xl mx-auto pb-20">
+  <header class="mb-10 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6">
+    <div class="max-w-xl">
+      <div class="flex items-center gap-3 mb-3">
+        <span class="px-3 py-1 bg-[#6C5DD3]/10 text-[#6C5DD3] rounded-full text-[10px] font-black uppercase tracking-widest leading-none">Quiz Session</span>
+        <span class="text-[10px] font-black uppercase text-[#6C6D70] tracking-widest opacity-60"><%= @quiz.generation_mode %></span>
+      </div>
+      <h1 class="text-3xl font-extrabold text-[#2D2E32] tracking-tight leading-tight"><%= @quiz.title %></h1>
+    </div>
+    <div class="flex-shrink-0">
+      <%= link_to material_path(@material), class: "inline-flex items-center justify-center gap-2 px-6 py-3 bg-white border border-[#E8E9EB] rounded-2xl text-sm font-bold text-[#6C6D70] hover:text-[#2D2E32] hover:border-[#6C5DD3] transition-all shadow-sm w-full sm:w-auto" do %>
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+        </svg>
+        Abort Quiz
+      <% end %>
+    </div>
+  </header>
+
+  <div class="space-y-12">
+    <div class="bg-white border border-[#E8E9EB] rounded-[40px] sm:rounded-[48px] p-6 sm:p-10 shadow-xl shadow-indigo-50/20 relative overflow-hidden">
+      <div class="absolute top-0 right-0 w-64 h-64 bg-[#6C5DD3]/5 rounded-full -mr-32 -mt-32 blur-3xl opacity-60"></div>
+      
+      <%= form_with url: submit_material_quiz_path(@material, @quiz), method: :post, class: "relative z-10 space-y-10" do |f| %>
+        <% @quiz.questions.each_with_index do |q, idx| %>
+          <fieldset class="space-y-6">
+            <legend class="text-lg sm:text-xl font-extrabold text-[#2D2E32] flex gap-3 sm:gap-4 leading-snug">
+              <span class="text-[#6C5DD3] flex-shrink-0">Q<%= idx + 1 %>.</span>
+              <span><%= q["question"] %></span>
+            </legend>
+            
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <% Array(q["options"]).each_with_index do |option, opt_idx| %>
+                <label class="group relative flex items-center p-4 sm:p-5 border border-[#E8E9EB] rounded-[24px] cursor-pointer transition-all hover:border-[#6C5DD3] hover:bg-[#6C5DD3]/5 has-[:checked]:border-[#6C5DD3] has-[:checked]:bg-[#6C5DD3]/5 has-[:checked]:ring-2 has-[:checked]:ring-[#6C5DD3]/10">
+                  <div class="flex items-center gap-4">
+                    <%= radio_button_tag "answers[#{idx}]", opt_idx, false, required: true, class: "w-5 h-5 text-[#6C5DD3] border-[#E8E9EB] focus:ring-[#6C5DD3] transition-all cursor-pointer" %>
+                    <span class="text-xs sm:text-sm font-bold text-[#2D2E32] group-hover:text-[#6C5DD3] transition-colors leading-tight"><%= option %></span>
+                  </div>
+                </label>
+              <% end %>
+            </div>
+          </fieldset>
+        <% end %>
+        
+        <div class="pt-8 border-t border-[#E8E9EB]">
+          <%= f.submit "Complete Analysis", 
+              class: "w-full py-5 bg-[#6C5DD3] text-white rounded-[24px] font-black text-sm tracking-tight hover:bg-[#5849C4] hover:-translate-y-1 transition-all shadow-2xl shadow-indigo-100 cursor-pointer" 
+          %>
+        </div>
+      <% end %>
+    </div>
+
+    <% if @latest_attempt.present? %>
+      <div id="results" class="bg-gray-50 border border-[#E8E9EB] rounded-[40px] sm:rounded-[48px] p-6 sm:p-10 relative overflow-hidden">
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6 mb-12">
+          <div>
+            <h2 class="text-2xl font-extrabold text-[#2D2E32] tracking-tight">Performance Summary</h2>
+            <p class="text-[10px] font-black text-[#6C6D70] uppercase tracking-widest mt-2 flex items-center gap-2">
+               <span class="w-1.5 h-1.5 bg-emerald-500 rounded-full"></span>
+               Analysis Complete
+            </p>
+          </div>
+          <div class="flex items-baseline gap-2 bg-white px-6 py-4 rounded-[24px] border border-[#E8E9EB] shadow-sm self-start sm:self-auto">
+            <div class="text-4xl font-black text-[#6C5DD3]"><%= @latest_attempt.score %></div>
+            <div class="text-lg font-bold text-[#B1B5C3]">/ <%= @latest_attempt.total %></div>
+          </div>
+        </div>
+
+        <div class="space-y-8">
+          <% Array(@quiz.questions).each_with_index do |question, idx| %>
+            <% review = @latest_attempt.answers[idx.to_s] || {} %>
+            <div class="bg-white border <%= review["correct"] ? 'border-emerald-100 shadow-emerald-50/50' : 'border-rose-100 shadow-rose-50/50' %> rounded-[32px] p-6 sm:p-8 shadow-xl relative overflow-hidden">
+              <div class="flex flex-col sm:flex-row sm:items-start justify-between gap-4 mb-8">
+                <h3 class="text-lg font-extrabold text-[#2D2E32] leading-tight">Q<%= idx + 1 %>. <%= review["question"] || question["question"] %></h3>
+                <span class="inline-flex items-center px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest whitespace-nowrap self-start <%= review["correct"] ? 'bg-emerald-50 text-emerald-600 border border-emerald-100' : 'bg-rose-50 text-rose-600 border border-rose-100' %>">
+                  <%= review["correct"] ? "Precise" : "Correction Needed" %>
+                </span>
+              </div>
+
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+                <div class="p-5 <%= review["correct"] ? 'bg-emerald-50/30' : 'bg-rose-50/30' %> rounded-[24px] border border-[#E8E9EB]">
+                  <p class="text-[9px] font-black uppercase text-[#6C6D70] tracking-widest opacity-60 mb-2">Selected Choice</p>
+                  <p class="text-sm font-bold text-[#2D2E32] leading-tight"><%= Array(question["options"])[review["selected_index"].to_i] || "No response" %></p>
+                </div>
+                <div class="p-5 bg-emerald-50 rounded-[24px] border border-emerald-100">
+                  <p class="text-[9px] font-black uppercase text-emerald-600 tracking-widest mb-2">Verified Expert Answer</p>
+                  <p class="text-sm font-black text-emerald-700 leading-tight underline underline-offset-4 decoration-emerald-200"><%= Array(question["options"])[review["correct_index"].to_i] || "Verified Source" %></p>
+                </div>
+              </div>
+
+              <% if review["explanation"].present? %>
+                <div class="p-6 bg-[#F8F9FB] border border-[#E8E9EB] rounded-[24px]">
+                  <div class="flex items-center gap-2 mb-3">
+                    <div class="w-6 h-6 bg-white rounded-lg flex items-center justify-center shadow-sm border border-[#E8E9EB]">
+                      <svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3 text-[#6C5DD3]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      </svg>
+                    </div>
+                    <span class="text-[9px] font-black uppercase text-[#6C5DD3] tracking-widest leading-none">Expert Explanation</span>
+                  </div>
+                  <p class="text-sm font-medium text-[#6C6D70] leading-relaxed"><%= review["explanation"] %></p>
+                </div>
+              <% end %>
+            </div>
+          <% end %>
+        </div>
+      </div>
+    <% end %>
+  </div>
+</div>

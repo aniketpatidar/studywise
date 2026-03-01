@@ -1,0 +1,7 @@
+<%= turbo_stream.update "notes" do %>
+  <% if @notes.any? %>
+    <%= render partial: "note", collection: @notes, as: :note %>
+  <% else %>
+    <p id="empty-notes" class="empty-state">No notes generated yet.</p>
+  <% end %>
+<% end %>

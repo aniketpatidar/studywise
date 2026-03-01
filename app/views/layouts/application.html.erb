@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html class="h-full bg-[#F8F9FB]">
+  <head>
+    <title><%= content_for(:title) || "Studywise" %></title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+
+    <%= yield :head %>
+
+    <link rel="icon" href="/icon.png" type="image/png">
+    <link rel="icon" href="/icon.svg" type="image/svg+xml">
+    <link rel="apple-touch-icon" href="/icon.png">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <%= stylesheet_link_tag "tailwind", "data-turbo-track": "reload" %>
+    <%= javascript_importmap_tags %>
+  </head>
+
+  <body class="h-full font-sans antialiased text-[#2D2E32]" data-controller="mobile-menu">
+    <div class="relative z-50 lg:hidden hidden" role="dialog" aria-modal="true" data-mobile-menu-target="menu">
+      <div class="fixed inset-0 bg-gray-900/80 transition-opacity" aria-hidden="true" data-action="click->mobile-menu#close"></div>
+
+      <div class="fixed inset-0 flex">
+        <div class="relative mr-16 flex w-full max-w-xs flex-1 transition-transform">
+          <div class="absolute left-full top-0 flex w-16 justify-center pt-5">
+            <button type="button" class="-m-2.5 p-2.5" data-action="click->mobile-menu#close">
+              <span class="sr-only">Close sidebar</span>
+              <svg class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          </div>
+
+          <div class="flex grow flex-col gap-y-5 overflow-y-auto bg-white px-6 pb-4">
+            <div class="flex h-16 shrink-0 items-center">
+              <a href="/" class="flex items-center gap-3 text-2xl font-extrabold text-[#2D2E32] no-underline">
+                <span class="w-8 h-8 flex items-center justify-center bg-[#6C5DD3] text-white rounded-lg text-lg">S</span>
+                Studywise
+              </a>
+            </div>
+            <nav class="flex flex-1 flex-col">
+              <ul role="list" class="flex flex-1 flex-col gap-y-7">
+                <li>
+                  <ul role="list" class="-mx-2 space-y-1">
+                    <% if user_signed_in? %>
+                      <li><%= link_to "Dashboard", root_path, class: "group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold #{current_page?(root_path) ? 'bg-gray-50 text-[#6C5DD3]' : 'text-gray-700 hover:text-[#6C5DD3] hover:bg-gray-50'}" %></li>
+                      <li><%= link_to "Materials", materials_path, class: "group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold #{current_page?(materials_path) ? 'bg-gray-50 text-[#6C5DD3]' : 'text-gray-700 hover:text-[#6C5DD3] hover:bg-gray-50'}" %></li>
+                      <li><%= link_to "Subject Tutors", subject_chats_path, class: "group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold #{current_page?(subject_chats_path) ? 'bg-gray-50 text-[#6C5DD3]' : 'text-gray-700 hover:text-[#6C5DD3] hover:bg-gray-50'}" %></li>
+                      <li><%= link_to "New Material", new_material_path, class: "group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold #{current_page?(new_material_path) ? 'bg-gray-50 text-[#6C5DD3]' : 'text-gray-700 hover:text-[#6C5DD3] hover:bg-gray-50'}" %></li>
+                    <% else %>
+                      <li><%= link_to "Sign in", login_path, class: "group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold text-gray-700 hover:text-[#6C5DD3] hover:bg-gray-50" %></li>
+                      <li><%= link_to "Sign up", signup_path, class: "group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold text-gray-700 hover:text-[#6C5DD3] hover:bg-gray-50" %></li>
+                    <% end %>
+                  </ul>
+                </li>
+                <% if user_signed_in? %>
+                  <li class="mt-auto">
+                    <div class="flex items-center gap-x-4 py-3 text-sm font-semibold leading-6 text-gray-900">
+                      <div class="h-8 w-8 rounded-full bg-gray-200"></div>
+                      <span class="sr-only">Your profile</span>
+                      <span aria-hidden="true" class="line-clamp-1"><%= current_user.name %></span>
+                      <%= button_to logout_path, method: :delete, class: "ml-auto p-2 text-gray-400 hover:text-gray-500" do %>
+                        <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
+                          <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15M12 9l-3 3m0 0l3 3m-3-3h12.75" />
+                        </svg>
+                      <% end %>
+                    </div>
+                  </li>
+                <% end %>
+              </ul>
+            </nav>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="hidden lg:fixed lg:inset-y-0 lg:z-50 lg:flex lg:w-72 lg:flex-col">
+      <div class="flex grow flex-col gap-y-5 overflow-y-auto bg-white px-6 pb-4 border-r border-[#E8E9EB]">
+        <div class="flex h-16 shrink-0 items-center">
+          <a href="/" class="flex items-center gap-3 text-2xl font-extrabold text-[#2D2E32] no-underline">
+            <span class="w-8 h-8 flex items-center justify-center bg-[#6C5DD3] text-white rounded-lg text-lg">S</span>
+            Studywise
+          </a>
+        </div>
+        <nav class="flex flex-1 flex-col">
+          <ul role="list" class="flex flex-1 flex-col gap-y-7">
+            <li>
+              <ul role="list" class="-mx-2 space-y-1">
+                <% if user_signed_in? %>
+                  <li>
+                    <%= link_to root_path, class: "group flex gap-x-3 rounded-xl p-3 text-sm leading-6 font-bold transition-all #{current_page?(root_path) ? 'bg-[#6C5DD3]/10 text-[#6C5DD3]' : 'text-[#6C6D70] hover:bg-gray-50 hover:text-[#2D2E32]'}" do %>
+                      Dashboard
+                    <% end %>
+                  </li>
+                  <li>
+                    <%= link_to materials_path, class: "group flex gap-x-3 rounded-xl p-3 text-sm leading-6 font-bold transition-all #{current_page?(materials_path) ? 'bg-[#6C5DD3]/10 text-[#6C5DD3]' : 'text-[#6C6D70] hover:bg-gray-50 hover:text-[#2D2E32]'}" do %>
+                      Materials
+                    <% end %>
+                  </li>
+                  <li>
+                    <%= link_to subject_chats_path, class: "group flex gap-x-3 rounded-xl p-3 text-sm leading-6 font-bold transition-all #{current_page?(subject_chats_path) ? 'bg-[#6C5DD3]/10 text-[#6C5DD3]' : 'text-[#6C6D70] hover:bg-gray-50 hover:text-[#2D2E32]'}" do %>
+                      Subject Tutors
+                    <% end %>
+                  </li>
+                  <li>
+                    <%= link_to new_material_path, class: "group flex gap-x-3 rounded-xl p-3 text-sm leading-6 font-bold transition-all #{current_page?(new_material_path) ? 'bg-[#6C5DD3]/10 text-[#6C5DD3]' : 'text-[#6C6D70] hover:bg-gray-50 hover:text-[#2D2E32]'}" do %>
+                      New Material
+                    <% end %>
+                  </li>
+                <% else %>
+                  <li><%= link_to "Sign in", login_path, class: "group flex gap-x-3 rounded-xl p-3 text-sm leading-6 font-bold transition-all text-[#6C6D70] hover:bg-gray-50 hover:text-[#2D2E32]" %></li>
+                  <li><%= link_to "Sign up", signup_path, class: "group flex gap-x-3 rounded-xl p-3 text-sm leading-6 font-bold transition-all text-[#6C6D70] hover:bg-gray-50 hover:text-[#2D2E32]" %></li>
+                <% end %>
+              </ul>
+            </li>
+            
+            <% if user_signed_in? %>
+              <li class="mt-auto">
+                <div class="flex items-center gap-x-4 py-3 text-sm font-semibold leading-6 text-gray-900 border-t border-[#E8E9EB]">
+                  <div class="flex flex-col min-w-0">
+                    <span class="text-sm font-bold text-[#2D2E32] line-clamp-1"><%= current_user.name %></span>
+                  </div>
+                  <%= button_to logout_path, method: :delete, class: "ml-auto p-2 text-gray-400 hover:text-[#2D2E32]" do %>
+                    <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15M12 9l-3 3m0 0l3 3m-3-3h12.75" />
+                    </svg>
+                  <% end %>
+                </div>
+              </li>
+            <% end %>
+          </ul>
+        </nav>
+      </div>
+    </div>
+
+    <div class="lg:pl-72 flex flex-col min-h-screen">
+      <div class="sticky top-0 z-40 flex h-16 shrink-0 items-center gap-x-4 border-b border-gray-200 bg-white px-4 shadow-sm sm:gap-x-6 sm:px-6 lg:hidden">
+        <button type="button" class="-m-2.5 p-2.5 text-gray-700 lg:hidden" data-action="click->mobile-menu#open">
+          <span class="sr-only">Open sidebar</span>
+          <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
+          </svg>
+        </button>
+
+        <div class="h-6 w-px bg-gray-200 lg:hidden" aria-hidden="true"></div>
+
+        <div class="flex flex-1 gap-x-4 self-stretch lg:gap-x-6 items-center">
+          <a href="/" class="text-lg font-black text-[#2D2E32]">StudyWISE</a>
+        </div>
+      </div>
+
+      <main class="py-10 flex-grow">
+        <div class="px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+          <% if notice.present? %>
+            <div class="mb-8 p-4 bg-emerald-50 border border-emerald-100 text-emerald-700 rounded-2xl text-sm font-medium"><%= notice %></div>
+          <% end %>
+          <% if alert.present? %>
+            <div class="mb-8 p-4 bg-rose-50 border border-rose-100 text-rose-700 rounded-2xl text-sm font-medium"><%= alert %></div>
+          <% end %>
+          <%= yield %>
+        </div>
+      </main>
+
+      <footer class="bg-white border-t border-gray-200 py-6 px-4 sm:px-6 lg:px-8">
+        <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4 text-[#6C6D70] font-medium text-xs">
+          <p>&copy; <%= Time.current.year %> StudyWISE. All rights reserved.</p>
+          <div class="flex gap-6">
+            <a href="#" class="hover:text-[#2D2E32]">Privacy Policy</a>
+            <a href="#" class="hover:text-[#2D2E32]">Terms of Service</a>
+            <a href="#" class="hover:text-[#2D2E32]">Contact Us</a>
+          </div>
+        </div>
+      </footer>
+    </div>
+  </body>
+</html>

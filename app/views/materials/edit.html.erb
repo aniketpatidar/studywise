@@ -1,0 +1,13 @@
+<% content_for :title, "Edit Material | StudyWISE" %>
+
+<section class="section-header">
+  <div>
+    <h1 class="page-title">Edit Material</h1>
+    <p class="page-subtitle">Update source details and keep your study context accurate.</p>
+  </div>
+  <%= link_to "Back", material_path(@material), class: "btn btn-ghost btn-inline" %>
+</section>
+
+<section class="surface">
+  <%= render "form", material: @material %>
+</section>

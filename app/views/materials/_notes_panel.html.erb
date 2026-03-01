@@ -1,0 +1,20 @@
+<article id="<%= dom_id(material, :notes_panel) %>" class="bg-white border border-[#E8E9EB] rounded-[32px] p-8 shadow-sm h-full flex flex-col">
+  <div class="flex items-center justify-between mb-8">
+    <h2 class="text-xl font-extrabold text-[#2D2E32]">Smart Notes</h2>
+    <%= link_to "All notes", material_notes_path(material), class: "text-xs font-bold text-[#6C5DD3] hover:underline uppercase tracking-widest" %>
+  </div>
+  <div id="notes" class="space-y-6 flex-grow overflow-y-auto">
+    <% if notes.any? %>
+      <%= render partial: "materials/note", collection: notes, as: :note %>
+    <% else %>
+      <div id="empty-notes" class="py-12 flex flex-col items-center justify-center border-2 border-dashed border-[#E8E9EB] rounded-[32px] text-center">
+        <div class="w-12 h-12 bg-gray-50 rounded-full flex items-center justify-center text-2xl mb-4 grayscale opacity-50 text-[#6C6D70]">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+          </svg>
+        </div>
+        <p class="text-[#6C6D70] text-sm italic">No notes generated yet.</p>
+      </div>
+    <% end %>
+  </div>
+</article>

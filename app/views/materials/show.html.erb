@@ -1,0 +1,94 @@
+<header class="mb-10 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
+  <div class="min-w-0 max-w-2xl">
+    <div class="flex items-center gap-3 mb-3">
+      <span class="px-3 py-1 bg-white border border-[#E8E9EB] rounded-full text-[10px] font-black uppercase text-[#6C6D70] tracking-widest leading-none flex items-center gap-2">
+        <span class="w-2 h-2 rounded-full <%= @material.status == 'completed' ? 'bg-emerald-500 animate-pulse' : (@material.status == 'processing' ? 'bg-amber-500 animate-bounce' : 'bg-rose-500') %>"></span>
+        <%= @material.status %>
+      </span>
+      <span class="text-[10px] font-black uppercase text-[#6C6D70] tracking-[0.2em] opacity-40">Original Source</span>
+    </div>
+    <h1 class="text-3xl sm:text-4xl font-extrabold text-[#2D2E32] tracking-tight leading-tight truncate"><%= @material.title %></h1>
+    <div class="flex items-center gap-4 mt-4">
+      <div class="flex items-center gap-2">
+        <div class="w-8 h-8 bg-gray-50 rounded-xl flex items-center justify-center text-[#6C5DD3] shadow-sm border border-[#E8E9EB]">
+          <% if @material.source_type == 'url' %>
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.828a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
+            </svg>
+          <% else %>
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+            </svg>
+          <% end %>
+        </div>
+        <span class="text-xs font-bold text-[#6C6D70] uppercase tracking-widest"><%= @material.source_type %> upload</span>
+      </div>
+      <div class="w-1 h-1 bg-[#E8E9EB] rounded-full"></div>
+      <span class="text-xs font-bold text-[#6C6D70] uppercase tracking-widest"><%= @material.created_at.strftime("%B %d, %Y") %></span>
+    </div>
+  </div>
+  
+  <div class="flex items-center gap-3 w-full lg:w-auto">
+    <%= link_to study_chat_material_path(@material), class: "flex-grow lg:flex-grow-0 inline-flex items-center justify-center gap-3 px-8 py-4 bg-[#6C5DD3] text-white rounded-[24px] font-black text-sm tracking-tight hover:bg-[#5849C4] hover:-translate-y-1 transition-all shadow-2xl shadow-indigo-100" do %>
+      <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+      </svg>
+      Study Chat
+    <% end %>
+    <%= link_to edit_material_path(@material), class: "p-4 bg-white border border-[#E8E9EB] rounded-[24px] text-[#6C6D70] hover:text-[#2D2E32] hover:border-[#6C5DD3] transition-all shadow-sm flex-shrink-0" do %>
+      <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+      </svg>
+    <% end %>
+  </div>
+</header>
+
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-10">
+  <%= render "status_panel", material: @material %>
+  <%= render "notes_panel", material: @material, notes: @notes %>
+</div>
+
+<div class="mt-12 bg-white border border-[#E8E9EB] rounded-[48px] p-8 sm:p-12 shadow-sm relative overflow-hidden">
+  <div class="absolute top-0 right-0 w-64 h-64 bg-emerald-50 rounded-full -mr-32 -mt-32 blur-3xl opacity-40"></div>
+  
+  <div class="relative z-10 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6 mb-12">
+    <div>
+      <h2 class="text-2xl font-extrabold text-[#2D2E32] tracking-tight mb-2">Knowledge Checks</h2>
+      <p class="text-sm font-medium text-[#6C6D70]">Master this material through structured practice sessions.</p>
+    </div>
+    <span class="px-5 py-2 bg-gray-50 border border-[#E8E9EB] rounded-full text-[10px] font-black uppercase text-[#6C6D70] tracking-[0.2em] whitespace-nowrap self-start sm:self-auto"><%= pluralize(@quizzes.size, 'Test') %> available</span>
+  </div>
+
+  <% if @quizzes.any? %>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 pb-4">
+      <% @quizzes.each do |quiz| %>
+        <%= link_to material_quiz_path(@material, quiz), class: "group p-6 bg-[#F8F9FB] border border-[#E8E9EB] rounded-[32px] transition-all hover:bg-white hover:border-[#6C5DD3] hover:shadow-xl hover:shadow-indigo-50/50" do %>
+          <div class="flex items-start justify-between mb-6">
+            <h3 class="text-lg font-extrabold text-[#2D2E32] group-hover:text-[#6C5DD3] transition-colors leading-tight"><%= quiz.title %></h3>
+            <span class="text-[9px] font-black uppercase text-indigo-400 tracking-widest bg-indigo-50 px-2 py-1 rounded-md opacity-0 group-hover:opacity-100 transition-opacity">Launch</span>
+          </div>
+          <div class="flex items-center gap-6">
+            <div class="flex items-center gap-2 text-xs font-bold text-[#6C6D70]">
+              <div class="w-1.5 h-1.5 bg-indigo-300 rounded-full"></div>
+              <%= quiz.questions.size %> Questions
+            </div>
+            <div class="flex items-center gap-2 text-xs font-bold text-[#6C6D70]">
+              <div class="w-1.5 h-1.5 bg-emerald-300 rounded-full"></div>
+              <%= quiz.generation_mode %>
+            </div>
+          </div>
+        <% end %>
+      <% end %>
+    </div>
+  <% else %>
+    <div class="py-20 flex flex-col items-center justify-center border-2 border-dashed border-[#E8E9EB] rounded-[40px] text-center">
+      <div class="w-20 h-20 bg-gray-50 rounded-[24px] flex items-center justify-center text-3xl mb-6 grayscale opacity-40 text-[#6C5DD3]">
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-10 h-10" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+        </svg>
+      </div>
+      <h3 class="text-xl font-extrabold text-[#2D2E32] mb-3">No quizzes generated yet</h3>
+      <p class="text-[#6C6D70] text-sm max-w-xs leading-relaxed font-medium">Continue your study session to automatically unlock targeted practice tests.</p>
+    </div>
+  <% end %>
+</div>

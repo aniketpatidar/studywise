@@ -1,0 +1,37 @@
+<% content_for :title, "Notes | #{@material.title}" %>
+
+<header class="mb-10 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6">
+  <div class="max-w-xl">
+    <div class="flex items-center gap-3 mb-3">
+      <span class="px-3 py-1 bg-emerald-50 border border-emerald-100 text-emerald-600 rounded-full text-[10px] uppercase font-black tracking-widest leading-none">Highlights</span>
+      <span class="text-[10px] font-black uppercase text-[#6C6D70] tracking-widest opacity-60"><%= pluralize(@notes.size, 'Key Point') %></span>
+    </div>
+    <h1 class="text-3xl font-extrabold text-[#2D2E32] tracking-tight leading-tight">Expert Analysis</h1>
+    <p class="text-[#6C6D70] font-medium leading-relaxed mt-2 text-sm sm:text-base"><%= @material.title %></p>
+  </div>
+  <div class="flex-shrink-0">
+    <%= link_to material_path(@material), class: "inline-flex items-center justify-center gap-2 px-4 py-4 bg-white border border-[#E8E9EB] rounded-full text-sm font-bold text-[#6C6D70] hover:text-[#2D2E32] hover:border-[#6C5DD3] transition-all shadow-sm w-full sm:w-auto" do %>
+      <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+      </svg>
+    <% end %>
+  </div>
+</header>
+
+<div class="space-y-8 pb-20 max-w-4xl mx-auto">
+  <% if @notes.any? %>
+    <div class="grid grid-cols-1 gap-8">
+      <%= render partial: "materials/note", collection: @notes, as: :note %>
+    </div>
+  <% else %>
+    <div class="py-20 flex flex-col items-center justify-center border-2 border-dashed border-[#E8E9EB] rounded-[48px] text-center bg-gray-50/30">
+      <div class="w-20 h-20 bg-white border border-[#F1F2F4] rounded-[24px] flex items-center justify-center text-[#6C5DD3] mb-8 shadow-sm grayscale opacity-30">
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-10 h-10" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+        </svg>
+      </div>
+      <h3 class="text-2xl font-extrabold text-[#2D2E32] mb-3">No insights yet</h3>
+      <p class="text-[#6C6D70] text-sm max-w-xs leading-relaxed font-medium px-6">Start a study session and ask the AI to summarize this material to see highlights here.</p>
+    </div>
+  <% end %>
+</div>

@@ -1,0 +1,22 @@
+@import "tailwindcss";
+
+@theme {
+  --color-brand: #6C5DD3;
+  --color-brand-dark: #5849C4;
+  --color-brand-soft: rgba(108, 93, 211, 0.1);
+  --color-bg-base: #F8F9FB;
+  --color-line: #E8E9EB;
+  --color-text-strong: #2D2E32;
+  --color-text-muted: #6C6D70;
+  
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 24px;
+}
+
+@layer base {
+  body {
+    @apply bg-bg-base text-text-strong antialiased;
+    font-family: 'Inter', sans-serif;
+  }
+}

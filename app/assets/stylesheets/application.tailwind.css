@@ -1,0 +1,63 @@
+@import "tailwindcss";
+@source "../../views/**/*.erb";
+@source "../../javascript/**/*.js";
+@source "../../../config/routes.rb";
+
+@theme {
+  --font-sans: "Inter", "Poppins", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  
+  --color-bg-base: #F8F9FB;
+  --color-bg-panel: #FFFFFF;
+  --color-bg-sidebar: #FFFFFF;
+  --color-text-strong: #2D2E32;
+  --color-text-muted: #6C6D70;
+  --color-line: #E8E9EB;
+  --color-line-strong: #D1D3D6;
+  --color-brand: #6C5DD3;
+  --color-brand-soft: rgba(108, 93, 211, 0.1);
+  --color-brand-dark: #5849C4;
+  --color-accent: #FF754C;
+  --color-success: #7FBA7A;
+  --color-danger: #FF6A6A;
+  
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 24px;
+
+  --shadow-sm: 0 4px 12px rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 8px 24px rgba(108, 93, 211, 0.12);
+  --shadow-lg: 0 20px 40px rgba(0, 0, 0, 0.08);
+}
+
+@layer base {
+  body {
+    @apply bg-bg-base text-text-strong antialiased font-sans;
+  }
+}
+
+@layer utilities {
+  .hidden { display: none !important; }
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border-width: 0;
+  }
+}
+
+@media (min-width: 1024px) {
+  .lg\:hidden { display: none !important; }
+  .lg\:flex { display: flex !important; }
+  .lg\:fixed { position: fixed !important; }
+  .lg\:inset-y-0 { inset-block: 0 !important; }
+  .lg\:z-50 { z-index: 50 !important; }
+  .lg\:w-72 { width: 18rem !important; }
+  .lg\:flex-col { flex-direction: column !important; }
+  .lg\:pl-72 { padding-left: 18rem !important; }
+}

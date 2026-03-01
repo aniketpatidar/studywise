@@ -1,0 +1,48 @@
+<article id="<%= dom_id(material, :status_panel) %>" class="bg-white border border-[#E8E9EB] rounded-[32px] p-8 shadow-sm">
+  <div class="flex items-center justify-between mb-6">
+    <h2 class="text-xl font-extrabold text-[#2D2E32]">Source Details</h2>
+    <span class="text-[10px] font-black uppercase text-[#6C6D70] tracking-widest"><%= material.source_type %></span>
+  </div>
+
+  <div class="space-y-4 mb-8">
+    <% if material.source_file.attached? %>
+      <div class="flex items-start gap-3 p-4 bg-gray-50 rounded-2xl border border-[#E8E9EB]">
+        <div class="text-[#6C5DD3]">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+          </svg>
+        </div>
+        <div>
+          <p class="text-[10px] font-black uppercase text-[#6C6D70] tracking-wider mb-0.5">Filename</p>
+          <p class="text-sm font-bold text-[#2D2E32] break-all"><%= material.source_file.filename %></p>
+        </div>
+      </div>
+    <% end %>
+
+    <% if material.source_url.present? %>
+       <div class="flex items-start gap-3 p-4 bg-gray-50 rounded-2xl border border-[#E8E9EB]">
+        <div class="text-[#6C5DD3]">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.828a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
+          </svg>
+        </div>
+        <div>
+          <p class="text-[10px] font-black uppercase text-[#6C6D70] tracking-wider mb-0.5">Source URL</p>
+          <%= link_to material.source_url, material.source_url, target: "_blank", rel: "noopener", class: "text-sm font-bold text-[#6C5DD3] hover:underline break-all" %>
+        </div>
+      </div>
+    <% end %>
+  </div>
+
+  <div class="mt-auto pt-6 border-t border-[#E8E9EB] grid grid-cols-1 sm:grid-cols-2 gap-3">
+    <% unless material.processing? %>
+      <%= button_to "Generate Smart Note", generate_note_material_path(material), method: :post, class: "w-full py-3 bg-[#6C5DD3] text-white rounded-2xl font-bold text-sm tracking-tight hover:bg-[#5849C4] transition-all shadow-md shadow-indigo-50" %>
+      <%= button_to "Generate Quiz", generate_quiz_material_path(material), method: :post, class: "w-full py-3 bg-white border border-[#E8E9EB] text-[#2D2E32] rounded-2xl font-bold text-sm tracking-tight hover:bg-gray-50 transition-all" %>
+    <% else %>
+      <div class="col-span-2 p-4 bg-amber-50 rounded-2xl border border-amber-100 flex items-center gap-3">
+        <div class="w-4 h-4 border-2 border-amber-500 border-t-transparent rounded-full animate-spin"></div>
+        <span class="text-xs font-bold text-amber-700">Note generation is currently running...</span>
+      </div>
+    <% end %>
+  </div>
+</article>
