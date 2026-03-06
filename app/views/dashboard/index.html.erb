@@ -1,98 +1,79 @@
-<% content_for :title, "Dashboard | StudyWISE" %>
+<% content_for :title, "Overview | StudyWISE" %>
 
-<header class="mb-10 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+<header class="mb-8 sm:mb-10 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
   <div>
-    <h1 class="text-3xl font-extrabold text-[#2D2E32] tracking-tight">Study Center</h1>
-    <p class="text-[#6C6D70] font-medium leading-relaxed">Everything looks great today. Ready to learn?</p>
+    <h1 class="text-2xl sm:text-3xl font-semibold text-slate-900 tracking-tight">Today’s study overview</h1>
+    <p class="mt-1 text-sm text-slate-600">
+      See how your AI assistant is performing and jump back into your work.
+    </p>
   </div>
-  <div class="flex items-center gap-3">
-    <%= link_to new_material_path, class: "flex items-center justify-center gap-2 px-6 py-3 bg-[#6C5DD3] text-white rounded-2xl font-bold text-sm hover:bg-[#5849C4] transition-all shadow-lg shadow-indigo-100" do %>
-      <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-      </svg>
-      New Material
+  <div class="flex flex-wrap items-center gap-3">
+    <%= link_to materials_path, class: "inline-flex items-center justify-center rounded-full border border-slate-200 px-3.5 py-1.5 text-xs font-semibold text-slate-700 hover:border-slate-900 hover:text-slate-900" do %>
+      View library
+    <% end %>
+    <%= link_to new_material_path, class: "inline-flex items-center justify-center gap-2 rounded-full bg-slate-900 px-4 py-2 text-xs font-semibold text-slate-50 hover:bg-black" do %>
+      <span>New material</span>
     <% end %>
   </div>
 </header>
 
-<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
-  <div class="bg-white border border-[#E8E9EB] p-6 rounded-[32px] shadow-sm hover:shadow-md transition-shadow">
-    <div class="w-12 h-12 bg-indigo-50 text-[#6C5DD3] rounded-2xl flex items-center justify-center text-xl mb-4">
-      <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
-      </svg>
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5 mb-10">
+  <div class="bg-white border border-slate-200 p-4 sm:p-5 rounded-2xl shadow-sm">
+    <div class="text-[11px] font-medium text-slate-500 mb-2">AI pass rate</div>
+    <div class="flex items-baseline gap-1">
+      <div class="text-2xl font-semibold text-slate-900"><%= @llm_success_rate %>%</div>
     </div>
-    <div class="text-2xl font-black text-[#2D2E32]"><%= @llm_success_rate %>%</div>
-    <div class="text-xs font-bold text-[#6C6D70] uppercase tracking-widest mt-1">AI Pass Rate</div>
   </div>
-  <div class="bg-white border border-[#E8E9EB] p-6 rounded-[32px] shadow-sm hover:shadow-md transition-shadow">
-    <div class="w-12 h-12 bg-emerald-50 text-emerald-600 rounded-2xl flex items-center justify-center text-xl mb-4">
-      <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-      </svg>
-    </div>
-    <div class="text-2xl font-black text-[#2D2E32]"><%= @materials_count %></div>
-    <div class="text-xs font-bold text-[#6C6D70] uppercase tracking-widest mt-1">Materials</div>
+  <div class="bg-white border border-slate-200 p-4 sm:p-5 rounded-2xl shadow-sm">
+    <div class="text-[11px] font-medium text-slate-500 mb-2">Materials</div>
+    <div class="text-2xl font-semibold text-slate-900"><%= @materials_count %></div>
   </div>
-  <div class="bg-white border border-[#E8E9EB] p-6 rounded-[32px] shadow-sm hover:shadow-md transition-shadow">
-    <div class="w-12 h-12 bg-amber-50 text-amber-600 rounded-2xl flex items-center justify-center text-xl mb-4">
-      <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-      </svg>
-    </div>
-    <div class="text-2xl font-black text-[#2D2E32]"><%= @notes_count %></div>
-    <div class="text-xs font-bold text-[#6C6D70] uppercase tracking-widest mt-1">Notes Created</div>
+  <div class="bg-white border border-slate-200 p-4 sm:p-5 rounded-2xl shadow-sm">
+    <div class="text-[11px] font-medium text-slate-500 mb-2">Notes created</div>
+    <div class="text-2xl font-semibold text-slate-900"><%= @notes_count %></div>
   </div>
-  <div class="bg-white border border-[#E8E9EB] p-6 rounded-[32px] shadow-sm hover:shadow-md transition-shadow">
-    <div class="w-12 h-12 bg-rose-50 text-rose-600 rounded-2xl flex items-center justify-center text-xl mb-4">
-      <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
-      </svg>
-    </div>
-    <div class="text-2xl font-black text-[#2D2E32]"><%= @llm_calls_24h.count %></div>
-    <div class="text-xs font-bold text-[#6C6D70] uppercase tracking-widest mt-1">AI Prompts (24h)</div>
+  <div class="bg-white border border-slate-200 p-4 sm:p-5 rounded-2xl shadow-sm">
+    <div class="text-[11px] font-medium text-slate-500 mb-2">AI prompts (24h)</div>
+    <div class="text-2xl font-semibold text-slate-900"><%= @llm_calls_24h.count %></div>
   </div>
 </div>
 
-<div class="grid grid-cols-1 gap-10">
-  <div class="bg-white border border-[#E8E9EB] rounded-[32px] p-8 shadow-sm flex flex-col">
-    <div class="flex items-center justify-between mb-8">
-      <h2 class="text-xl font-extrabold text-[#2D2E32]">AI Health Status</h2>
-      <span class="px-2 py-0.5 bg-emerald-50 border border-emerald-100 rounded-lg text-[10px] font-bold text-emerald-600 tracking-tight">Active</span>
+<div class="grid grid-cols-1 gap-6">
+  <div class="bg-white border border-slate-200 rounded-2xl p-5 sm:p-6">
+    <div class="flex items-center justify-between mb-4">
+      <h2 class="text-sm font-semibold text-slate-900">AI health</h2>
+      <span class="inline-flex items-center rounded-full bg-emerald-50 px-2 py-0.5 text-[10px] font-medium text-emerald-700 border border-emerald-100">
+        Active
+      </span>
     </div>
 
-    <div class="grid grid-cols-2 gap-4 mb-8">
-      <div class="p-4 bg-gray-50 rounded-2xl border border-[#E8E9EB]">
-        <p class="text-xs font-bold uppercase text-[#6C6D70] mb-1">Latency</p>
-        <p class="text-2xl font-black text-[#2D2E32]"><%= @llm_avg_latency %>ms</p>
+    <div class="grid grid-cols-2 gap-4 mb-6">
+      <div class="rounded-xl border border-slate-200 bg-slate-50 px-3 py-3">
+        <p class="text-[11px] font-medium text-slate-500 mb-1">Average latency</p>
+        <p class="text-lg font-semibold text-slate-900"><%= @llm_avg_latency %>ms</p>
       </div>
-      <div class="p-4 bg-gray-50 rounded-2xl border border-[#E8E9EB]">
-        <p class="text-xs font-bold uppercase text-[#6C6D70] mb-1">Pass Rate</p>
-        <p class="text-2xl font-black text-[#2D2E32]"><%= @llm_success_rate %>%</p>
+      <div class="rounded-xl border border-slate-200 bg-slate-50 px-3 py-3">
+        <p class="text-[11px] font-medium text-slate-500 mb-1">Pass rate</p>
+        <p class="text-lg font-semibold text-slate-900"><%= @llm_success_rate %>%</p>
       </div>
     </div>
 
-    <h3 class="text-xs font-bold uppercase text-[#6C6D70] tracking-widest mb-4">Recent Events</h3>
+    <h3 class="text-xs font-semibold text-slate-500 tracking-[0.16em] uppercase mb-3">Recent events</h3>
     <% if @llm_events.any? %>
-      <div class="space-y-3 flex-grow overflow-y-auto max-h-[300px] pr-2 custom-scrollbar">
+      <div class="space-y-2 max-h-72 overflow-y-auto pr-1 custom-scrollbar">
         <% @llm_events.each do |event| %>
-          <div class="p-3 bg-gray-50 border border-[#E8E9EB] rounded-2xl flex items-center justify-between">
+          <div class="flex items-center justify-between rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5">
             <div>
-              <p class="text-xs font-bold text-[#2D2E32] mb-0.5"><%= event.operation.titleize %></p>
-              <p class="text-[10px] text-[#6C6D70] font-medium"><%= event.model %> • <%= event.created_at.strftime("%H:%M") %></p>
+              <p class="text-xs font-semibold text-slate-900 mb-0.5"><%= event.operation.titleize %></p>
+              <p class="text-[11px] text-slate-500"><%= event.model %> • <%= event.created_at.strftime("%H:%M") %></p>
             </div>
-            <span class="w-2 h-2 rounded-full <%= event.success ? 'bg-emerald-500' : 'bg-rose-500' %>"></span>
+            <span class="h-2 w-2 rounded-full <%= event.success ? 'bg-emerald-500' : 'bg-rose-500' %>"></span>
           </div>
         <% end %>
       </div>
     <% else %>
-      <div class="py-12 flex flex-col items-center justify-center border-2 border-dashed border-[#E8E9EB] rounded-[32px] text-center">
-        <div class="w-16 h-16 bg-gray-50 rounded-full flex items-center justify-center text-3xl mb-4 grayscale opacity-50 text-[#6C6D70]">
-          <svg xmlns="http://www.w3.org/2000/svg" class="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-          </svg>
-        </div>
-        <p class="text-[#6C6D70] text-sm font-medium">No AI events recorded yet.</p>
+      <div class="py-10 flex flex-col items-center justify-center border border-dashed border-slate-200 rounded-xl text-center bg-slate-50">
+        <p class="text-sm text-slate-600">No AI events recorded yet. Start a study chat or generate notes to see activity here.</p>
       </div>
     <% end %>
   </div>

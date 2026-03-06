@@ -2,6 +2,8 @@
   <% if @notes.any? %>
     <%= render partial: "note", collection: @notes, as: :note %>
   <% else %>
-    <p id="empty-notes" class="empty-state">No notes generated yet.</p>
+    <div id="empty-notes" class="py-10 flex flex-col items-center justify-center border border-dashed border-slate-200 rounded-xl text-center bg-slate-50">
+      <p class="text-[11px] text-slate-600">No notes generated yet.</p>
+    </div>
   <% end %>
 <% end %>

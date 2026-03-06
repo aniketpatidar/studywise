@@ -1,18 +1,18 @@
-<div id="<%= dom_id(note) %>" class="group p-6 bg-gray-50 border border-[#E8E9EB] rounded-3xl transition-all hover:border-[#6C5DD3]/30 hover:bg-white shadow-sm hover:shadow-md">
-  <div class="flex items-start justify-between gap-4 mb-4">
+<div id="<%= dom_id(note) %>" class="group p-4 bg-slate-50 border border-slate-200 rounded-xl transition-all hover:border-slate-900 hover:bg-white shadow-sm hover:shadow-md">
+  <div class="flex items-start justify-between gap-4 mb-3">
     <div>
-      <h3 class="font-bold text-[#2D2E32] mb-1"><%= note.title %></h3>
-      <span class="text-[10px] font-bold text-[#6C6D70] uppercase tracking-wide"><%= note.created_at.strftime("%b %d, %Y") %></span>
+      <h3 class="font-semibold text-slate-900 group-hover:text-black transition-colors mb-1 text-sm"><%= note.title %></h3>
+      <span class="text-[10px] font-medium text-slate-500 uppercase tracking-wide"><%= note.created_at.strftime("%b %d, %Y") %></span>
     </div>
-    <div class="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-      <%= button_to share_material_note_path(note.material, note), method: :post, class: "p-2 bg-white border border-[#E8E9EB] rounded-xl text-[#6C6D70] hover:text-[#6C5DD3] transition-colors shadow-sm", title: note.shared_public? ? "Disable Share" : "Share Note" do %>
-        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+    <div class="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+      <%= button_to share_material_note_path(note.material, note), method: :post, class: "p-1.5 bg-white border border-slate-200 rounded-lg text-slate-500 hover:text-slate-900 hover:border-slate-400 transition-colors shadow-sm", title: note.shared_public? ? "Disable Share" : "Share Note" do %>
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
         </svg>
       <% end %>
       <% if note.shared_public? %>
-        <%= link_to shared_note_path(note.share_token), target: "_blank", rel: "noopener", class: "p-2 bg-[#6C5DD3]/10 border border-[#6C5DD3]/20 rounded-xl text-[#6C5DD3] hover:bg-[#6C5DD3]/20 transition-colors shadow-sm", title: "View Public Link" do %>
-          <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <%= link_to shared_note_path(note.share_token), target: "_blank", rel: "noopener", class: "p-1.5 bg-slate-100 border border-slate-200 rounded-lg text-slate-900 hover:bg-slate-200 transition-colors shadow-sm", title: "View Public Link" do %>
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
           </svg>
         <% end %>
@@ -20,14 +20,14 @@
     </div>
   </div>
 
-  <div class="prose prose-sm max-w-none text-[#6C6D70] leading-relaxed mb-4 line-clamp-3">
+  <div class="prose prose-sm max-w-none text-slate-600 leading-relaxed mb-3 line-clamp-2 text-xs">
     <%= note.content %>
   </div>
 
   <% if note.key_concepts.any? %>
-    <div class="flex flex-wrap gap-2">
+    <div class="flex flex-wrap gap-1.5">
       <% note.key_concepts.each do |concept| %>
-        <span class="px-2 py-0.5 bg-white border border-[#E8E9EB] rounded-lg text-[10px] font-bold text-[#6C6D70] tracking-tight"><%= concept %></span>
+        <span class="px-2 py-0.5 bg-white border border-slate-200 rounded-md text-[9px] font-medium text-slate-600 tracking-tight"><%= concept %></span>
       <% end %>
     </div>
   <% end %>

@@ -1,15 +1,14 @@
-<% content_for :title, "New Material | StudyWISE" %>
+<% content_for :title, "Upload Material | StudyWISE" %>
 
-<div class="max-w-3xl mx-auto pb-20 px-4 sm:px-0">
-  <header class="mb-10">
-    <h1 class="text-3xl sm:text-4xl font-extrabold text-[#2D2E32] mb-4 tracking-tight">Expand Your Library</h1>
-    <p class="text-[#6C6D70] font-medium leading-relaxed text-sm sm:text-base">Upload your source files, paste text, or link a YouTube lecture.</p>
+<div class="max-w-4xl mx-auto pb-20">
+  <header class="mb-8 sm:mb-10">
+    <h1 class="text-2xl sm:text-3xl font-semibold text-slate-900 tracking-tight">Add new study material</h1>
+    <p class="mt-1 text-sm text-slate-600">
+      Drop in a file, paste content, or link a YouTube lecture and we will handle smart notes and quizzes.
+    </p>
   </header>
 
-  <div class="bg-white border border-[#E8E9EB] rounded-[40px] sm:rounded-[48px] p-8 sm:p-14 shadow-2xl shadow-indigo-100/30 relative overflow-hidden">
-    <div class="absolute top-0 right-0 w-64 h-64 bg-[#6C5DD3]/5 rounded-full -mr-32 -mt-32 blur-3xl opacity-60"></div>
-    <div class="relative z-10">
-      <%= render "form", material: @material %>
-    </div>
+  <div class="bg-white border border-slate-200 rounded-2xl p-5 sm:p-6 shadow-sm">
+    <%= render "form", material: @material %>
   </div>
 </div>

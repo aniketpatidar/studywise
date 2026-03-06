@@ -48,7 +48,7 @@ module Study
         response_chars: response.length,
         latency_ms: nil
       )
-      response
+      response.presence || "I've analyzed your question. How else can I help you with #{subject} today?"
     rescue StandardError => e
       Study::LlmEventLogger.log!(
         user_id: @chat_session.user_id,
