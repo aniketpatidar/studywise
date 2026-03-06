@@ -1,0 +1,48 @@
+<div id="<%= dom_id(material, :quizzes_panel) %>" class="mt-8 bg-white border border-slate-200 rounded-2xl p-5 sm:p-6 shadow-sm relative overflow-hidden">
+  <% quiz_generation_in_progress = local_assigns.fetch(:quiz_generation_in_progress, Study::GenerationTracker.quiz_in_progress?(material.id)) %>
+  <% can_generate_quiz = material.notes.exists? %>
+  <div class="relative z-10 flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+    <div>
+      <h2 class="text-sm font-semibold text-slate-900">Knowledge Checks</h2>
+      <p class="text-[11px] text-slate-500 mt-1">Master this material through structured practice sessions.</p>
+    </div>
+    <div class="flex items-center gap-2">
+      <span class="inline-flex items-center rounded-full bg-slate-50 px-2 py-0.5 text-[10px] font-medium text-slate-600 border border-slate-200"><%= pluralize(quizzes.size, 'Test') %> available</span>
+      <% if can_generate_quiz %>
+        <% if quiz_generation_in_progress %>
+          <span class="inline-flex items-center rounded-full border border-sky-200 bg-sky-50 px-2 py-0.5 text-[10px] font-medium text-sky-700">Generating...</span>
+        <% else %>
+          <%= button_to (quizzes.any? ? "Generate Another" : "Generate Quiz"), generate_quiz_material_path(material), method: :post, params: { idempotency_key: SecureRandom.uuid }, class: "inline-flex items-center justify-center rounded-full bg-slate-900 px-3 py-1 text-[10px] font-semibold text-white hover:bg-black", data: { turbo_submits_with: "Starting..." } %>
+        <% end %>
+      <% end %>
+    </div>
+  </div>
+
+  <% if quizzes.any? %>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <% quizzes.each do |quiz| %>
+        <%= link_to material_quiz_path(material, quiz), class: "group block p-4 rounded-xl border border-slate-200 bg-slate-50 hover:border-slate-900 transition-colors" do %>
+          <div class="flex items-start justify-between mb-4">
+            <h3 class="text-sm font-semibold text-slate-900 group-hover:text-black transition-colors"><%= quiz.title %></h3>
+            <span class="inline-flex items-center justify-center rounded-full bg-slate-900 px-2 py-1 text-[9px] font-semibold text-slate-50 opacity-0 group-hover:opacity-100 transition-opacity">Launch</span>
+          </div>
+          <div class="flex items-center gap-4 text-[11px] font-medium text-slate-500">
+            <div class="flex items-center gap-1.5">
+              <span class="w-1.5 h-1.5 bg-slate-300 rounded-full"></span>
+              <%= quiz.questions.size %> Questions
+            </div>
+            <div class="flex items-center gap-1.5">
+              <span class="w-1.5 h-1.5 bg-slate-300 rounded-full"></span>
+              <%= quiz.generation_mode %>
+            </div>
+          </div>
+        <% end %>
+      <% end %>
+    </div>
+  <% else %>
+    <div class="py-12 flex flex-col items-center justify-center border border-dashed border-slate-200 rounded-xl text-center bg-slate-50">
+      <h3 class="text-xs font-semibold text-slate-900 mb-1">No quizzes generated yet</h3>
+      <p class="text-[11px] text-slate-600 max-w-xs">Use `Generate Quiz` to create your first test from this material.</p>
+    </div>
+  <% end %>
+</div>

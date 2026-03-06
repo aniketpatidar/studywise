@@ -8,6 +8,16 @@
     </p>
   </header>
 
+  <section class="mb-6 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+    <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+      <div>
+        <p class="text-[11px] font-semibold uppercase tracking-[0.2em] text-slate-500">First Value Flow</p>
+        <p class="mt-1 text-sm text-slate-700">1. Create material 2. Generate note 3. Start quiz or study chat</p>
+      </div>
+      <%= button_to "Import sample instead", import_sample_materials_path, method: :post, class: "inline-flex items-center justify-center rounded-full border border-slate-200 px-4 py-2 text-xs font-semibold text-slate-700 hover:border-slate-900 hover:text-slate-900 bg-white" %>
+    </div>
+  </section>
+
   <div class="bg-white border border-slate-200 rounded-2xl p-5 sm:p-6 shadow-sm">
     <%= render "form", material: @material %>
   </div>

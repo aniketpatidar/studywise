@@ -46,7 +46,7 @@
         </div>
       <% end %>
     <% else %>
-      <div class="h-full flex flex-col items-center justify-center text-center max-w-md mx-auto px-4">
+      <div id="chat-empty-state" class="h-full flex flex-col items-center justify-center text-center max-w-md mx-auto px-4">
         <div class="w-12 h-12 bg-slate-100 text-slate-400 flex items-center justify-center rounded-xl mb-6 border border-slate-200">
           <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
@@ -61,16 +61,16 @@
   </div>
 
   <div class="px-6 sm:px-8 py-5 border-t border-slate-100 bg-slate-50/30">
-    <%= form_with url: subject_chats_path, method: :post, class: "relative group" do |f| %>
+    <p id="chat-pending-state" class="hidden mb-2 text-[11px] font-medium text-slate-500">Generating response...</p>
+    <%= form_with url: subject_chats_path, method: :post, id: "chat-compose-form", data: { stream_url: stream_subject_chat_path(@chat_session) }, class: "flex items-center gap-2" do |f| %>
       <%= f.hidden_field :subject_name, value: @chat_session.subject_name %>
-      <%= f.text_area :message, 
+      <%= f.text_field :message, 
           placeholder: "Ask something specific...", 
           required: true, 
-          rows: 1,
           id: "chat-input",
-          class: "w-full pl-5 pr-14 py-3 bg-white border border-slate-200 rounded-2xl text-sm font-medium text-slate-900 focus:outline-none focus:border-slate-900 focus:ring-4 focus:ring-slate-900/5 transition-all resize-none shadow-sm" 
+          class: "w-full px-4 py-3 bg-white border border-slate-200 rounded-2xl text-sm font-medium text-slate-900 focus:outline-none focus:border-slate-900 focus:ring-4 focus:ring-slate-900/5 transition-all shadow-sm" 
       %>
-      <button type="submit" class="absolute right-2 bottom-2 w-9 h-9 rounded-xl bg-slate-900 text-white hover:bg-black transition-all flex items-center justify-center shadow-md">
+      <button id="chat-send-button" type="submit" class="rounded-xl bg-slate-900 text-white hover:bg-black transition-all flex items-center justify-center shadow-md shrink-0 disabled:opacity-50 disabled:cursor-not-allowed" style="width: 2.5rem; height: 2.5rem;">
         <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 11.5l14-6.5-6.5 14-1.5-5-5-1.5z" />
         </svg>
@@ -85,13 +85,125 @@
     if (chatLog) {
       chatLog.scrollTop = chatLog.scrollHeight;
     }
-    
-    const textarea = document.getElementById('chat-input');
-    if (textarea) {
-      textarea.addEventListener('input', () => {
-        textarea.style.height = 'auto';
-        textarea.style.height = Math.min(textarea.scrollHeight, 120) + 'px';
-        if (chatLog) chatLog.scrollTop = chatLog.scrollHeight;
+
+    const composeForm = document.getElementById('chat-compose-form');
+    const pendingState = document.getElementById('chat-pending-state');
+    const input = document.getElementById('chat-input');
+    const sendButton = document.getElementById('chat-send-button');
+    const emptyState = document.getElementById('chat-empty-state');
+
+    if (composeForm && pendingState && input && sendButton) {
+      const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content;
+
+      const appendBubble = (role, content) => {
+        const wrapper = document.createElement('div');
+        wrapper.className = "flex " + (role === "user" ? "justify-end" : "justify-start");
+
+        const row = document.createElement('div');
+        row.className = "max-w-[90%] sm:max-w-[80%] flex items-start gap-3 " + (role === "user" ? "flex-row-reverse" : "");
+
+        const avatar = document.createElement('div');
+        avatar.className = "w-7 h-7 rounded-full shadow-sm flex-shrink-0 flex items-center justify-center text-[10px] font-semibold " +
+          (role === "user" ? "bg-slate-900 text-white" : "bg-slate-100 text-slate-600 border border-slate-200");
+        avatar.textContent = role === "user" ? "You" : "AI";
+
+        const bubble = document.createElement('div');
+        bubble.className = (role === "user"
+          ? "bg-slate-900 text-white rounded-2xl rounded-tr-none"
+          : "bg-slate-50 text-slate-900 rounded-2xl rounded-tl-none border border-slate-200") + " px-4 py-3 shadow-sm";
+
+        const text = document.createElement('div');
+        text.className = "whitespace-pre-wrap text-xs sm:text-sm font-medium leading-relaxed";
+        text.textContent = content || "";
+
+        bubble.appendChild(text);
+        row.appendChild(avatar);
+        row.appendChild(bubble);
+        wrapper.appendChild(row);
+        chatLog.appendChild(wrapper);
+        chatLog.scrollTop = chatLog.scrollHeight;
+        return text;
+      };
+
+      const parseSseBlocks = (buffer, onEvent) => {
+        let remaining = buffer;
+        while (true) {
+          const splitAt = remaining.indexOf("\n\n");
+          if (splitAt === -1) break;
+          const block = remaining.slice(0, splitAt);
+          remaining = remaining.slice(splitAt + 2);
+          const data = block
+            .split("\n")
+            .filter((line) => line.startsWith("data:"))
+            .map((line) => line.replace(/^data:\s?/, ""))
+            .join("\n");
+          if (!data) continue;
+          try {
+            onEvent(JSON.parse(data));
+          } catch (_e) {
+          }
+        }
+        return remaining;
+      };
+
+      composeForm.addEventListener('submit', async (event) => {
+        event.preventDefault();
+        const streamUrl = composeForm.dataset.streamUrl;
+        const message = input.value.trim();
+        if (!message || !streamUrl) return;
+
+        pendingState.classList.remove('hidden');
+        input.setAttribute('readonly', 'readonly');
+        sendButton.disabled = true;
+        if (emptyState) emptyState.classList.add("hidden");
+
+        appendBubble("user", message);
+        const assistantTextNode = appendBubble("assistant", "");
+        let assistantContent = "";
+
+        try {
+          const formData = new FormData(composeForm);
+          formData.set("message", message);
+
+          const response = await fetch(streamUrl, {
+            method: "POST",
+            headers: {
+              "Accept": "text/event-stream",
+              "X-CSRF-Token": csrfToken || ""
+            },
+            body: formData
+          });
+
+          if (!response.ok || !response.body) {
+            throw new Error("Streaming request failed.");
+          }
+
+          const reader = response.body.getReader();
+          const decoder = new TextDecoder();
+          let buffer = "";
+
+          while (true) {
+            const { done, value } = await reader.read();
+            if (done) break;
+            buffer += decoder.decode(value, { stream: true });
+            buffer = parseSseBlocks(buffer, (payload) => {
+              if (payload.type === "chunk" && payload.content) {
+                assistantContent += payload.content;
+                assistantTextNode.textContent = assistantContent;
+                chatLog.scrollTop = chatLog.scrollHeight;
+              }
+            });
+          }
+
+          input.value = "";
+        } catch (_error) {
+          assistantTextNode.textContent = "Response failed while streaming. Please retry.";
+        } finally {
+          pendingState.classList.add('hidden');
+          input.removeAttribute('readonly');
+          sendButton.disabled = false;
+          input.focus();
+        }
       });
     }
   })();

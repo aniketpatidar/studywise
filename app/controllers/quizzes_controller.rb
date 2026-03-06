@@ -3,10 +3,15 @@ class QuizzesController < ApplicationController
   before_action :set_quiz, only: %i[show submit]
 
   def show
-    @latest_attempt = @quiz.quiz_attempts.where(user: current_user).order(created_at: :desc).first
+    @latest_attempt = @quiz.quiz_attempts.find_by(user: current_user)
   end
 
   def submit
+    if @quiz.quiz_attempts.exists?(user: current_user)
+      redirect_to material_quiz_path(@material, @quiz), alert: "You have already submitted this quiz."
+      return
+    end
+
     score = 0
     answers = {}
     questions = Array(@quiz.questions)
@@ -39,7 +44,7 @@ class QuizzesController < ApplicationController
   private
 
   def set_material
-    @material = current_user.materials.find(params[:material_id])
+    @material = current_user.materials.friendly.find(params[:material_id])
   end
 
   def set_quiz

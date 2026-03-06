@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_03_01_220600) do
+ActiveRecord::Schema[8.0].define(version: 2026_03_07_005000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -60,7 +60,9 @@ ActiveRecord::Schema[8.0].define(version: 2026_03_01_220600) do
     t.string "title"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "slug"
     t.index ["material_id"], name: "index_chat_sessions_on_material_id"
+    t.index ["slug"], name: "index_chat_sessions_on_slug", unique: true
     t.index ["user_id", "mode"], name: "index_chat_sessions_on_user_id_and_mode"
     t.index ["user_id"], name: "index_chat_sessions_on_user_id"
   end
@@ -79,10 +81,24 @@ ActiveRecord::Schema[8.0].define(version: 2026_03_01_220600) do
     t.text "error_message"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.text "prompt_preview"
+    t.text "response_preview"
     t.index ["material_id", "created_at"], name: "index_llm_events_on_material_id_and_created_at"
     t.index ["material_id"], name: "index_llm_events_on_material_id"
     t.index ["user_id", "created_at"], name: "index_llm_events_on_user_id_and_created_at"
     t.index ["user_id"], name: "index_llm_events_on_user_id"
+  end
+
+  create_table "material_chunks", force: :cascade do |t|
+    t.bigint "material_id", null: false
+    t.integer "sequence", null: false
+    t.text "chunk_text", null: false
+    t.text "summary"
+    t.jsonb "embedding", default: [], null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["material_id", "sequence"], name: "index_material_chunks_on_material_id_and_sequence", unique: true
+    t.index ["material_id"], name: "index_material_chunks_on_material_id"
   end
 
   create_table "materials", force: :cascade do |t|
@@ -94,6 +110,8 @@ ActiveRecord::Schema[8.0].define(version: 2026_03_01_220600) do
     t.integer "status", default: 0, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "slug"
+    t.index ["slug"], name: "index_materials_on_slug", unique: true
     t.index ["source_type"], name: "index_materials_on_source_type"
     t.index ["status"], name: "index_materials_on_status"
     t.index ["user_id"], name: "index_materials_on_user_id"
@@ -109,7 +127,9 @@ ActiveRecord::Schema[8.0].define(version: 2026_03_01_220600) do
     t.string "generation_mode", default: "fallback", null: false
     t.string "share_token"
     t.boolean "shared_public", default: false, null: false
+    t.string "idempotency_key"
     t.index ["created_at"], name: "index_notes_on_created_at"
+    t.index ["material_id", "idempotency_key"], name: "index_notes_on_material_id_and_idempotency_key", unique: true
     t.index ["material_id"], name: "index_notes_on_material_id"
     t.index ["share_token"], name: "index_notes_on_share_token", unique: true
   end
@@ -122,6 +142,7 @@ ActiveRecord::Schema[8.0].define(version: 2026_03_01_220600) do
     t.jsonb "answers", default: {}, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index ["quiz_id", "user_id"], name: "index_quiz_attempts_on_quiz_id_and_user_id", unique: true
     t.index ["quiz_id"], name: "index_quiz_attempts_on_quiz_id"
     t.index ["user_id"], name: "index_quiz_attempts_on_user_id"
   end
@@ -133,6 +154,8 @@ ActiveRecord::Schema[8.0].define(version: 2026_03_01_220600) do
     t.string "generation_mode", default: "fallback", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "idempotency_key"
+    t.index ["material_id", "idempotency_key"], name: "index_quizzes_on_material_id_and_idempotency_key", unique: true
     t.index ["material_id"], name: "index_quizzes_on_material_id"
   end
 
@@ -142,7 +165,11 @@ ActiveRecord::Schema[8.0].define(version: 2026_03_01_220600) do
     t.string "password_digest", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.boolean "admin", default: false, null: false
+    t.string "oauth_provider"
+    t.string "oauth_uid"
     t.index ["email"], name: "index_users_on_email", unique: true
+    t.index ["oauth_provider", "oauth_uid"], name: "index_users_on_oauth_provider_and_oauth_uid", unique: true
   end
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
@@ -152,6 +179,7 @@ ActiveRecord::Schema[8.0].define(version: 2026_03_01_220600) do
   add_foreign_key "chat_sessions", "users"
   add_foreign_key "llm_events", "materials"
   add_foreign_key "llm_events", "users"
+  add_foreign_key "material_chunks", "materials"
   add_foreign_key "materials", "users"
   add_foreign_key "notes", "materials"
   add_foreign_key "quiz_attempts", "quizzes"

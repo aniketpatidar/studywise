@@ -45,6 +45,6 @@ module Authentication
   end
 
   def after_authentication_url
-    session.delete(:return_to_after_authenticating) || root_path
+    session.delete(:return_to_after_authenticating) || materials_path
   end
 end

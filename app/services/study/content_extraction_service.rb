@@ -8,33 +8,63 @@ require "uri"
 module Study
   class ContentExtractionService
     class ExtractionError < StandardError; end
+    Result = Struct.new(:content, :warnings, keyword_init: true)
 
     def initialize(material:)
       @material = material
     end
 
-    def call
-      content = [@material.raw_text.to_s.strip]
-      content << extract_from_file if @material.source_file.attached?
-      content << extract_from_youtube if @material.source_type == "youtube" && @material.source_url.present?
+    def call(max_chars: 24_000)
+      extract(max_chars:).content
+    end
 
-      combined = content.compact.join("\n\n").strip
-      raise ExtractionError, "No content could be extracted from this material." if combined.blank?
-
-      combined.first(24_000)
+    def preview(max_chars: 4_000)
+      extract(max_chars:)
     end
 
     private
 
+    def extract(max_chars:)
+      content = [@material.raw_text.to_s.strip]
+      warnings = []
+
+      if @material.source_file.attached?
+        file_result = extract_from_file
+        content << file_result[:text]
+        warnings.concat(Array(file_result[:warnings]))
+      end
+
+      if @material.source_type == "youtube" && @material.source_url.present?
+        youtube_result = extract_from_youtube
+        content << youtube_result[:text]
+        warnings.concat(Array(youtube_result[:warnings]))
+      end
+
+      combined = content.compact.join("\n\n").strip
+      if combined.blank?
+        if warnings.any?
+          raise ExtractionError, warnings.join(" ")
+        end
+        raise ExtractionError, "No content could be extracted from this material."
+      end
+
+      Result.new(content: combined.first(max_chars), warnings:)
+    end
+
     def extract_from_file
       filename = @material.source_file.filename.to_s.downcase
       data = @material.source_file.download
-      return data.force_encoding("UTF-8").encode("UTF-8", invalid: :replace, undef: :replace) if filename.end_with?(".txt", ".md")
-      return extract_pdf_text(data) if filename.end_with?(".pdf")
-      return extract_docx_text(data) if filename.end_with?(".docx")
-      return extract_pptx_text(data) if filename.end_with?(".pptx")
+      return { text: data.force_encoding("UTF-8").encode("UTF-8", invalid: :replace, undef: :replace), warnings: [] } if filename.end_with?(".txt", ".md")
+      return { text: extract_pdf_text(data), warnings: [] } if filename.end_with?(".pdf")
+      return { text: extract_docx_text(data), warnings: [] } if filename.end_with?(".docx")
+      return { text: extract_pptx_text(data), warnings: [] } if filename.end_with?(".pptx")
 
-      "Attached file #{filename} (unsupported parser)."
+      {
+        text: "",
+        warnings: [
+          "Unsupported file parser for #{filename}. Upload PDF/TXT/MD/DOCX/PPTX or paste text directly."
+        ]
+      }
     rescue StandardError => e
       raise ExtractionError, "File extraction failed: #{e.message}"
     end
@@ -48,7 +78,9 @@ module Study
       reader = PDF::Reader.new(temp.path)
       pages = reader.pages.first(20).map { |page| page.text.to_s.strip }.reject(&:blank?)
       text = pages.join("\n\n")
-      raise ExtractionError, "PDF extraction returned empty text." if text.blank?
+      if text.blank?
+        raise ExtractionError, "PDF text is empty. This is often a scanned PDF; run OCR first or paste text manually."
+      end
 
       text
     ensure
@@ -57,12 +89,20 @@ module Study
 
     def extract_from_youtube
       video_id = youtube_video_id(@material.source_url)
-      raise ExtractionError, "Invalid YouTube URL." if video_id.blank?
+      raise ExtractionError, "Invalid YouTube URL. Use a full watch link like https://www.youtube.com/watch?v=VIDEO_ID." if video_id.blank?
 
-      transcript = fetch_youtube_data_api_transcript(video_id) || fetch_json_transcript(video_id) || fetch_xml_transcript(video_id)
-      raise ExtractionError, "Could not fetch transcript for this YouTube video." if transcript.blank?
+      attempted = []
+      transcript = fetch_youtube_data_api_transcript(video_id).tap { attempted << "YouTube Data API captions" }
+      transcript ||= fetch_json_transcript(video_id).tap { attempted << "Community JSON transcript" }
+      transcript ||= fetch_xml_transcript(video_id).tap { attempted << "YouTube timedtext XML" }
+      if transcript.blank?
+        raise ExtractionError, "No transcript found. Tried: #{attempted.join(', ')}. Use a video with captions or paste transcript text."
+      end
 
-      [youtube_video_header(video_id), transcript].compact.join("\n\n")
+      {
+        text: [youtube_video_header(video_id), transcript].compact.join("\n\n"),
+        warnings: []
+      }
     rescue StandardError => e
       raise ExtractionError, "YouTube extraction failed: #{e.message}"
     end
@@ -201,7 +241,7 @@ module Study
       text = []
       Zip::File.open_buffer(binary) do |zip|
         entry = zip.find_entry("word/document.xml")
-        raise ExtractionError, "DOCX file has no document.xml." unless entry
+        raise ExtractionError, "DOCX has no readable word/document.xml." unless entry
 
         doc = REXML::Document.new(entry.get_input_stream.read)
         doc.elements.each("//w:t") do |node|
@@ -211,7 +251,7 @@ module Study
       end
 
       joined = text.join(" ")
-      raise ExtractionError, "DOCX extraction returned empty text." if joined.blank?
+      raise ExtractionError, "DOCX text is empty. Ensure the document has selectable text." if joined.blank?
 
       joined
     end
@@ -220,7 +260,7 @@ module Study
       text = []
       Zip::File.open_buffer(binary) do |zip|
         slide_entries = zip.entries.select { |entry| entry.name.match?(%r{\A(ppt/slides/slide\d+\.xml|ppt/notesSlides/notesSlide\d+\.xml)\z}) }
-        raise ExtractionError, "PPTX contains no readable slide XML." if slide_entries.empty?
+        raise ExtractionError, "PPTX has no readable slide XML." if slide_entries.empty?
 
         slide_entries.each do |entry|
           doc = REXML::Document.new(entry.get_input_stream.read)
@@ -232,7 +272,7 @@ module Study
       end
 
       joined = text.join(" ")
-      raise ExtractionError, "PPTX extraction returned empty text." if joined.blank?
+      raise ExtractionError, "PPTX text is empty. Check slides/notes contain selectable text." if joined.blank?
 
       joined
     end

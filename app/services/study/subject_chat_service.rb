@@ -18,6 +18,15 @@ module Study
       @chat_session.chat_messages.create!(role: "assistant", content: assistant)
     end
 
+    def stream
+      @chat_session.chat_messages.create!(role: "user", content: @user_message)
+      assistant = generate_response do |chunk|
+        yield chunk if block_given?
+      end
+      @chat_session.chat_messages.create!(role: "assistant", content: assistant)
+      assistant
+    end
+
     private
 
     def generate_response
@@ -26,6 +35,7 @@ module Study
       model = ENV.fetch("GEMINI_MODEL", "gemini-2.0-flash")
       key = ENV["GEMINI_API_KEY"].to_s
       raise Study::GeminiClient::ConfigurationError, "GEMINI_API_KEY is missing." if key.blank?
+      prompt = "Subject: #{subject}\nQuestion: #{@user_message}"
 
       context = RubyLLM.context { |config| config.gemini_api_key = key }
       chat = context.chat(model:, provider: :gemini, assume_model_exists: true)
@@ -35,7 +45,7 @@ module Study
         Keep your response concise and practical for students.
       INSTRUCTIONS
       chat.with_tool(Study::Tools::SubjectPracticeTool.new)
-      response = chat.ask("Subject: #{subject}\nQuestion: #{@user_message}").content.to_s
+      response = stream_assistant_response(chat:, prompt:)
       Study::LlmEventLogger.log!(
         user_id: @chat_session.user_id,
         material_id: nil,
@@ -44,11 +54,17 @@ module Study
         operation: "subject_chat",
         success: true,
         status_code: 200,
-        prompt_chars: @user_message.length,
+        prompt_chars: prompt.length,
         response_chars: response.length,
-        latency_ms: nil
+        latency_ms: nil,
+        prompt_preview: prompt,
+        response_preview: response
       )
-      response.presence || "I've analyzed your question. How else can I help you with #{subject} today?"
+      final_response = response.presence || "I've analyzed your question. How else can I help you with #{subject} today?"
+      if block_given? && response.blank?
+        yield final_response
+      end
+      final_response
     rescue StandardError => e
       Study::LlmEventLogger.log!(
         user_id: @chat_session.user_id,
@@ -61,9 +77,30 @@ module Study
         prompt_chars: @user_message.length,
         response_chars: 0,
         latency_ms: nil,
-        error_message: e.message
+        error_message: e.message,
+        prompt_preview: @user_message
       )
-      "Subject chat fallback response (#{e.class}): Start by breaking the topic into 3 core concepts and test yourself after each."
+      fallback = "Subject chat fallback response (#{e.class}): Start by breaking the topic into 3 core concepts and test yourself after each."
+      yield fallback if block_given?
+      fallback
+    end
+
+    def stream_assistant_response(chat:, prompt:)
+      if block_given?
+        streamed_content = +""
+        message = chat.ask(prompt) do |chunk|
+          piece = chunk.content.to_s
+          next if piece.blank?
+
+          streamed_content << piece
+          yield piece
+        end
+        response = message.content.to_s.strip
+        response = streamed_content.strip if response.blank?
+        response
+      else
+        chat.ask(prompt).content.to_s
+      end
     end
   end
 end

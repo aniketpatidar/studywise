@@ -20,35 +20,37 @@
   </header>
 
   <div class="space-y-8">
-    <div class="bg-white border border-slate-200 rounded-2xl p-6 sm:p-8 shadow-sm">
-      <%= form_with url: submit_material_quiz_path(@material, @quiz), method: :post, class: "space-y-8" do |f| %>
-        <% @quiz.questions.each_with_index do |q, idx| %>
-          <fieldset class="space-y-4">
-            <legend class="text-base sm:text-lg font-semibold text-slate-900 flex gap-3 leading-snug">
-              <span class="text-slate-400 flex-shrink-0"><%= idx + 1 %>.</span>
-              <span><%= q["question"] %></span>
-            </legend>
-            
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              <% Array(q["options"]).each_with_index do |option, opt_idx| %>
-                <label class="group relative flex items-center p-4 border border-slate-200 rounded-xl cursor-pointer transition-all hover:border-slate-400 hover:bg-slate-50 has-[:checked]:border-slate-900 has-[:checked]:bg-slate-50 has-[:checked]:ring-2 has-[:checked]:ring-slate-900/5">
-                  <div class="flex items-center gap-3">
-                    <%= radio_button_tag "answers[#{idx}]", opt_idx, false, required: true, class: "w-4 h-4 text-slate-900 border-slate-300 focus:ring-slate-900 transition-all cursor-pointer" %>
-                    <span class="text-sm font-medium text-slate-700 group-hover:text-slate-900 transition-colors leading-tight"><%= option %></span>
-                  </div>
-                </label>
-              <% end %>
-            </div>
-          </fieldset>
+    <% if @latest_attempt.blank? %>
+      <div class="bg-white border border-slate-200 rounded-2xl p-6 sm:p-8 shadow-sm">
+        <%= form_with url: submit_material_quiz_path(@material, @quiz), method: :post, class: "space-y-8" do |f| %>
+          <% @quiz.questions.each_with_index do |q, idx| %>
+            <fieldset class="space-y-4">
+              <legend class="text-base sm:text-lg font-semibold text-slate-900 flex gap-3 leading-snug">
+                <span class="text-slate-400 flex-shrink-0"><%= idx + 1 %>.</span>
+                <span><%= q["question"] %></span>
+              </legend>
+              
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <% Array(q["options"]).each_with_index do |option, opt_idx| %>
+                  <label class="group relative flex items-center p-4 border border-slate-200 rounded-xl cursor-pointer transition-all hover:border-slate-400 hover:bg-slate-50 has-[:checked]:border-slate-900 has-[:checked]:bg-slate-50 has-[:checked]:ring-2 has-[:checked]:ring-slate-900/5">
+                    <div class="flex items-center gap-3">
+                      <%= radio_button_tag "answers[#{idx}]", opt_idx, false, required: true, class: "w-4 h-4 text-slate-900 border-slate-300 focus:ring-slate-900 transition-all cursor-pointer" %>
+                      <span class="text-sm font-medium text-slate-700 group-hover:text-slate-900 transition-colors leading-tight"><%= option %></span>
+                    </div>
+                  </label>
+                <% end %>
+              </div>
+            </fieldset>
+          <% end %>
+          
+          <div class="pt-6 border-t border-slate-200">
+            <%= f.submit "Complete Analysis", 
+                class: "w-full py-3 bg-slate-900 text-white rounded-full font-semibold text-xs tracking-tight hover:bg-black transition-all cursor-pointer" 
+            %>
+          </div>
         <% end %>
-        
-        <div class="pt-6 border-t border-slate-200">
-          <%= f.submit "Complete Analysis", 
-              class: "w-full py-3 bg-slate-900 text-white rounded-full font-semibold text-xs tracking-tight hover:bg-black transition-all cursor-pointer" 
-          %>
-        </div>
-      <% end %>
-    </div>
+      </div>
+    <% end %>
 
     <% if @latest_attempt.present? %>
       <div id="results" class="bg-slate-50 border border-slate-200 rounded-2xl p-6 sm:p-8">

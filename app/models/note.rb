@@ -2,6 +2,7 @@ class Note < ApplicationRecord
   belongs_to :material
 
   validates :title, :content, presence: true
+  validates :idempotency_key, uniqueness: { scope: :material_id }, allow_blank: true
 
   scope :recent, -> { order(created_at: :desc) }
 

@@ -19,7 +19,7 @@ class NotesController < ApplicationController
   private
 
   def set_material
-    @material = current_user.materials.find(params[:material_id])
+    @material = current_user.materials.friendly.find(params[:material_id])
   end
 
   def set_note

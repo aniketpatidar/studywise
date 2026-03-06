@@ -1,8 +1,14 @@
+<% note_ready = @notes.any? %>
+<% quiz_ready = @quizzes.any? %>
+<% chat_ready = @material.processed? && @study_chat_started %>
+<% note_active = @note_generation_in_progress %>
+<% quiz_active = @quiz_generation_in_progress %>
+
 <header class="mb-8 sm:mb-10 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6">
   <div>
     <div class="flex items-center gap-2 mb-2">
       <span class="inline-flex items-center gap-1.5 rounded-full bg-slate-100 px-2.5 py-1 text-[10px] font-medium text-slate-600 tracking-wider uppercase">
-        <span class="w-1.5 h-1.5 rounded-full <%= @material.status == 'completed' ? 'bg-emerald-500' : (@material.status == 'processing' ? 'bg-amber-500 animate-pulse' : 'bg-rose-500') %>"></span>
+        <span class="w-1.5 h-1.5 rounded-full <%= @material.processed? ? 'bg-emerald-500' : (@material.processing? ? 'bg-amber-500 animate-pulse' : (@material.failed? ? 'bg-rose-500' : 'bg-slate-400')) %>"></span>
         <%= @material.status.to_s.humanize %>
       </span>
       <span class="text-[10px] font-medium uppercase text-slate-500 tracking-wider">
@@ -22,54 +28,105 @@
   </div>
   
   <div class="flex flex-wrap items-center gap-3 w-full sm:w-auto mt-4 sm:mt-0">
-    <%= link_to study_chat_material_path(@material), class: "inline-flex items-center justify-center gap-2 rounded-full bg-slate-900 px-4 py-2 text-xs font-semibold text-slate-50 hover:bg-black w-full sm:w-auto" do %>
-      Study Chat
-    <% end %>
     <%= link_to edit_material_path(@material), class: "inline-flex items-center justify-center rounded-full border border-slate-200 px-4 py-2 text-xs font-semibold text-slate-700 hover:border-slate-900 hover:text-slate-900 w-full sm:w-auto" do %>
       Edit
     <% end %>
   </div>
 </header>
 
+<section class="mb-6 rounded-2xl border border-slate-200 bg-white p-4 sm:p-5 shadow-sm">
+  <p class="text-[10px] font-semibold uppercase tracking-[0.2em] text-slate-500 mb-3">Guided Flow</p>
+  <div class="grid grid-cols-1 sm:grid-cols-4 gap-2">
+    <div class="rounded-xl border px-3 py-2 text-xs font-semibold <%= @material.persisted? ? 'border-emerald-200 bg-emerald-50 text-emerald-800' : 'border-slate-200 bg-slate-50 text-slate-500' %>">
+      1. Create material
+    </div>
+    <div class="rounded-xl border px-3 py-2 text-xs font-semibold <%= note_ready ? 'border-emerald-200 bg-emerald-50 text-emerald-800' : (note_active ? 'border-amber-200 bg-amber-50 text-amber-800' : 'border-slate-200 bg-slate-50 text-slate-500') %>">
+      2. Generate note
+    </div>
+    <div class="rounded-xl border px-3 py-2 text-xs font-semibold <%= quiz_ready ? 'border-emerald-200 bg-emerald-50 text-emerald-800' : (quiz_active ? 'border-amber-200 bg-amber-50 text-amber-800' : 'border-slate-200 bg-slate-50 text-slate-500') %>">
+      3. Generate quiz
+    </div>
+    <div class="rounded-xl border px-3 py-2 text-xs font-semibold <%= chat_ready ? 'border-emerald-200 bg-emerald-50 text-emerald-800' : 'border-slate-200 bg-slate-50 text-slate-500' %>">
+      4. Start study chat
+    </div>
+  </div>
+</section>
+
+<section class="mb-6 rounded-2xl border border-slate-200 bg-white p-4 sm:p-5 shadow-sm">
+  <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+    <div>
+      <p class="text-[10px] font-semibold uppercase tracking-[0.2em] text-slate-500">Next Best Action</p>
+      <% if @material.failed? %>
+        <p class="mt-1 text-sm text-rose-700">Note generation failed. Retry after checking source quality.</p>
+      <% elsif note_active %>
+        <p class="mt-1 text-sm text-sky-700">Note generation is running. Wait for completion before next step.</p>
+      <% elsif !note_ready %>
+        <p class="mt-1 text-sm text-slate-700">Generate a smart note to unlock quizzes and stronger chat context.</p>
+      <% elsif quiz_active %>
+        <p class="mt-1 text-sm text-sky-700">Quiz generation is running. You can start chat while it completes.</p>
+      <% elsif !quiz_ready %>
+        <p class="mt-1 text-sm text-slate-700">Generate a quiz to test retention from this material.</p>
+      <% elsif !chat_ready %>
+        <p class="mt-1 text-sm text-slate-700">Start study chat to ask follow-up questions with grounded context.</p>
+      <% else %>
+        <p class="mt-1 text-sm text-emerald-700">Flow complete. Continue with chat, notes, or quiz attempts.</p>
+      <% end %>
+    </div>
+
+    <div class="flex flex-wrap gap-2">
+      <% if !note_active && !note_ready %>
+        <%= button_to "Generate Note", generate_note_material_path(@material), method: :post, params: { idempotency_key: @note_idempotency_key }, class: "inline-flex items-center justify-center rounded-full bg-slate-900 px-4 py-2 text-xs font-semibold text-white hover:bg-black", data: { turbo_submits_with: "Starting..." } %>
+      <% elsif note_active %>
+        <span class="inline-flex items-center justify-center rounded-full border border-sky-200 bg-sky-50 px-4 py-2 text-xs font-semibold text-sky-700">Note In Progress</span>
+      <% elsif quiz_active %>
+        <%= button_to "Regenerate Note", generate_note_material_path(@material), method: :post, params: { idempotency_key: @note_idempotency_key }, class: "inline-flex items-center justify-center rounded-full border border-slate-200 bg-white px-4 py-2 text-xs font-semibold text-slate-700 hover:border-slate-900 hover:text-slate-900", data: { turbo_submits_with: "Starting..." } %>
+        <span class="inline-flex items-center justify-center rounded-full border border-sky-200 bg-sky-50 px-4 py-2 text-xs font-semibold text-sky-700">Quiz In Progress</span>
+      <% elsif note_ready %>
+        <%= button_to "Regenerate Note", generate_note_material_path(@material), method: :post, params: { idempotency_key: @note_idempotency_key }, class: "inline-flex items-center justify-center rounded-full border border-slate-200 bg-white px-4 py-2 text-xs font-semibold text-slate-700 hover:border-slate-900 hover:text-slate-900", data: { turbo_submits_with: "Starting..." } %>
+        <%= button_to (quiz_ready ? "Generate Another Quiz" : "Generate Quiz"), generate_quiz_material_path(@material), method: :post, params: { idempotency_key: @quiz_idempotency_key }, class: "inline-flex items-center justify-center rounded-full bg-slate-900 px-4 py-2 text-xs font-semibold text-white hover:bg-black", data: { turbo_submits_with: "Starting..." } %>
+        <% if quiz_ready %>
+          <%= link_to "Open Study Chat", study_chat_material_path(@material), class: "inline-flex items-center justify-center rounded-full border border-slate-200 bg-white px-4 py-2 text-xs font-semibold text-slate-700 hover:border-slate-900 hover:text-slate-900" %>
+        <% end %>
+      <% else %>
+        <%= link_to "Open Study Chat", study_chat_material_path(@material), class: "inline-flex items-center justify-center rounded-full bg-slate-900 px-4 py-2 text-xs font-semibold text-white hover:bg-black" %>
+      <% end %>
+    </div>
+  </div>
+</section>
+
 <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-  <%= render "status_panel", material: @material %>
+  <%= render "status_panel",
+             material: @material,
+             note_generation_in_progress: @note_generation_in_progress,
+             quiz_generation_in_progress: @quiz_generation_in_progress,
+             note_error_message: @note_error_message,
+             quiz_error_message: @quiz_error_message %>
   <%= render "notes_panel", material: @material, notes: @notes %>
 </div>
 
-<div class="mt-8 bg-white border border-slate-200 rounded-2xl p-5 sm:p-6 shadow-sm relative overflow-hidden">
-  <div class="relative z-10 flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
-    <div>
-      <h2 class="text-sm font-semibold text-slate-900">Knowledge Checks</h2>
-      <p class="text-[11px] text-slate-500 mt-1">Master this material through structured practice sessions.</p>
+<% if @extraction_preview.present? || @extraction_warnings.any? %>
+  <section class="mt-8 rounded-2xl border border-slate-200 bg-white p-5 sm:p-6 shadow-sm">
+    <div class="flex items-center justify-between mb-4">
+      <h2 class="text-sm font-semibold text-slate-900">Extraction Preview</h2>
+      <span class="inline-flex items-center rounded-full bg-slate-50 px-2 py-0.5 text-[10px] font-medium text-slate-600 border border-slate-200">First 4,000 chars</span>
     </div>
-    <span class="inline-flex items-center rounded-full bg-slate-50 px-2 py-0.5 text-[10px] font-medium text-slate-600 border border-slate-200"><%= pluralize(@quizzes.size, 'Test') %> available</span>
-  </div>
 
-  <% if @quizzes.any? %>
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-      <% @quizzes.each do |quiz| %>
-        <%= link_to material_quiz_path(@material, quiz), class: "group block p-4 rounded-xl border border-slate-200 bg-slate-50 hover:border-slate-900 transition-colors" do %>
-          <div class="flex items-start justify-between mb-4">
-            <h3 class="text-sm font-semibold text-slate-900 group-hover:text-black transition-colors"><%= quiz.title %></h3>
-            <span class="inline-flex items-center justify-center rounded-full bg-slate-900 px-2 py-1 text-[9px] font-semibold text-slate-50 opacity-0 group-hover:opacity-100 transition-opacity">Launch</span>
-          </div>
-          <div class="flex items-center gap-4 text-[11px] font-medium text-slate-500">
-            <div class="flex items-center gap-1.5">
-              <span class="w-1.5 h-1.5 bg-slate-300 rounded-full"></span>
-              <%= quiz.questions.size %> Questions
-            </div>
-            <div class="flex items-center gap-1.5">
-              <span class="w-1.5 h-1.5 bg-slate-300 rounded-full"></span>
-              <%= quiz.generation_mode %>
-            </div>
-          </div>
+    <% if @extraction_warnings.any? %>
+      <div class="mb-4 rounded-xl border border-amber-200 bg-amber-50 px-3 py-2 text-[11px] text-amber-900">
+        <% @extraction_warnings.each do |warning| %>
+          <p><%= warning %></p>
         <% end %>
-      <% end %>
-    </div>
-  <% else %>
-    <div class="py-12 flex flex-col items-center justify-center border border-dashed border-slate-200 rounded-xl text-center bg-slate-50">
-      <h3 class="text-xs font-semibold text-slate-900 mb-1">No quizzes generated yet</h3>
-      <p class="text-[11px] text-slate-600 max-w-xs">Continue your study session to automatically unlock targeted practice tests.</p>
-    </div>
-  <% end %>
-</div>
+      </div>
+    <% end %>
+
+    <% if @extraction_preview.present? %>
+      <pre class="whitespace-pre-wrap break-words rounded-xl border border-slate-200 bg-slate-50 p-4 text-xs text-slate-700"><%= @extraction_preview %></pre>
+    <% else %>
+      <div class="rounded-xl border border-dashed border-slate-200 bg-slate-50 p-4 text-xs text-slate-600">
+        No extracted text preview available yet.
+      </div>
+    <% end %>
+  </section>
+<% end %>
+
+<%= render "quizzes_panel", material: @material, quizzes: @quizzes, quiz_generation_in_progress: @quiz_generation_in_progress %>

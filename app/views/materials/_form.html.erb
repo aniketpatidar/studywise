@@ -52,8 +52,11 @@
           <span class="text-sm font-medium text-slate-900 mb-0.5">Click to upload document</span>
           <span class="text-[11px] text-slate-500">PDF, TXT, MD, DOCX, PPTX</span>
         </div>
-        <%= f.file_field :source_file, accept: ".pdf,.txt,.md,.docx,.pptx", class: "hidden" %>
+        <%= f.file_field :source_file, accept: ".pdf,.txt,.md,.docx,.pptx", class: "hidden", id: "material_source_file_input" %>
       <% end %>
+      <p id="material_source_file_name" class="mt-3 text-center text-[11px] font-medium text-slate-600">
+        No file selected
+      </p>
     </div>
 
     <div class="space-y-2.5">
@@ -71,3 +74,25 @@
     %>
   </div>
 <% end %>
+
+<script>
+  (function() {
+    const bindFileNamePreview = () => {
+      const input = document.getElementById("material_source_file_input");
+      const nameNode = document.getElementById("material_source_file_name");
+      if (!input || !nameNode || input.dataset.boundFileNamePreview === "1") return;
+
+      const render = () => {
+        const file = input.files && input.files[0];
+        nameNode.textContent = file ? `Selected: ${file.name}` : "No file selected";
+      };
+
+      input.addEventListener("change", render);
+      input.dataset.boundFileNamePreview = "1";
+      render();
+    };
+
+    document.addEventListener("turbo:load", bindFileNamePreview, { once: true });
+    bindFileNamePreview();
+  })();
+</script>

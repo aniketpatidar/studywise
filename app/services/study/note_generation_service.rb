@@ -2,11 +2,18 @@ module Study
   class NoteGenerationService
     class GenerationError < StandardError; end
 
-    def initialize(material:)
+    def initialize(material:, idempotency_key: nil)
       @material = material
+      @idempotency_key = idempotency_key.to_s.presence
     end
 
     def call
+      existing_note = find_existing_note
+      if existing_note
+        @material.processed!
+        return existing_note
+      end
+
       extracted = source_content
       raise GenerationError, "Material content is missing." if extracted.blank?
 
@@ -16,8 +23,9 @@ module Study
         material: @material,
         title: "Smart Note: #{@material.title}",
         content: render_note(generated[:data], generated[:mode]),
-        data: generated[:data],
-        generation_mode: generated[:mode]
+        data: generated[:data].merge("idempotency_key" => @idempotency_key),
+        generation_mode: generated[:mode],
+        idempotency_key: @idempotency_key
       ).tap do
         @material.processed!
       end
@@ -28,9 +36,19 @@ module Study
     private
 
     def source_content
-      @source_content ||= Study::ContentExtractionService.new(material: @material).call
+      @source_content ||= begin
+        extracted = Study::ContentExtractionService.new(material: @material).call
+        Study::MaterialRetrievalIndex.build(material: @material, source_text: extracted)
+        extracted
+      end
     rescue Study::ContentExtractionService::ExtractionError => e
       raise GenerationError, e.message
+    end
+
+    def find_existing_note
+      return if @idempotency_key.blank?
+
+      @material.notes.find_by(idempotency_key: @idempotency_key)
     end
 
     def structured_note_payload(extracted)
@@ -58,7 +76,7 @@ module Study
           material_id: @material.id
         }
       )
-      parsed = JSON.parse(response)
+      parsed = parse_json_payload(response)
 
       { data: normalized_payload(parsed), mode: "gemini" }
     rescue Study::GeminiClient::ConfigurationError, Study::GeminiClient::RequestError => e
@@ -81,6 +99,27 @@ module Study
           }
         end.compact
       }
+    end
+
+    def parse_json_payload(raw_response)
+      content = raw_response.to_s.strip
+      return JSON.parse(content) if content.start_with?("{")
+
+      if content.start_with?("```")
+        content = content.sub(/\A```(?:json)?\s*/i, "").sub(/\s*```\z/, "").strip
+        return JSON.parse(content)
+      end
+
+      content = content.sub(/\Ajson\s*/i, "").strip
+      return JSON.parse(content) if content.start_with?("{")
+
+      json_start = content.index("{")
+      json_end = content.rindex("}")
+      if json_start && json_end && json_end > json_start
+        return JSON.parse(content[json_start..json_end])
+      end
+
+      JSON.parse(content)
     end
 
     def build_fallback_data(error_message: nil)

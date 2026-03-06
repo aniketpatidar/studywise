@@ -1,4 +1,4 @@
-<div class="h-[calc(100vh-12rem)] lg:h-[calc(100vh-8rem)] max-w-5xl mx-auto flex flex-col bg-white border border-slate-200 sm:rounded-3xl shadow-sm overflow-hidden mb-4">
+<div class="max-w-5xl mx-auto flex flex-col bg-white border border-slate-200 sm:rounded-3xl shadow-sm overflow-visible mb-4 lg:h-[calc(100dvh-8rem)] lg:overflow-hidden">
   <div class="px-6 sm:px-8 py-5 border-b border-slate-100 bg-slate-50/50">
     <div class="flex items-start justify-between gap-4">
       <div class="min-w-0">
@@ -16,32 +16,62 @@
     </div>
 
     <div class="mt-5 rounded-2xl bg-slate-50 border border-slate-200 p-4">
-      <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-        <div class="flex items-center gap-3 min-w-0">
-          <div class="h-8 w-8 rounded-lg bg-slate-200 text-slate-600 flex items-center justify-center text-[10px] font-bold border border-slate-300 flex-shrink-0 uppercase">
-            <%= @material.source_type %>
+      <div class="flex flex-col gap-4">
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <div class="flex items-center gap-3 min-w-0">
+            <% source_type = @material.source_type.to_s.downcase %>
+            <div class="h-8 w-8 rounded-full bg-slate-200 text-slate-700 flex items-center justify-center text-[10px] font-bold border border-slate-300 flex-shrink-0 overflow-hidden leading-none uppercase">
+              <%= source_type == "youtube" ? "YT" : source_type.first(2) %>
+            </div>
+            <div class="min-w-0">
+              <p class="text-[10px] font-medium text-slate-500 uppercase tracking-wider mb-0.5">Current source</p>
+              <p class="text-xs font-semibold text-slate-900 truncate">
+                <%= @material.title %>
+              </p>
+            </div>
           </div>
-          <div class="min-w-0">
-            <p class="text-[10px] font-medium text-slate-500 uppercase tracking-wider mb-0.5">Current source</p>
-            <p class="text-xs font-semibold text-slate-900 truncate">
-              <%= @material.title %>
-            </p>
+          
+          <div class="flex items-center gap-2">
+            <%= link_to material_notes_path(@material), class: "inline-flex items-center justify-center rounded-full bg-slate-900 px-4 py-1.5 text-[11px] font-semibold text-white hover:bg-black transition shadow-sm" do %>
+              View Notes
+            <% end %>
+            <%= link_to generate_quiz_material_path(@material), data: { turbo_method: :post }, class: "inline-flex items-center justify-center rounded-full border border-slate-200 bg-white px-4 py-1.5 text-[11px] font-semibold text-slate-700 hover:border-slate-900 hover:text-slate-900 transition shadow-sm" do %>
+              Generate Quiz
+            <% end %>
           </div>
         </div>
-        
-        <div class="flex items-center gap-2">
-          <%= link_to material_notes_path(@material), class: "inline-flex items-center justify-center rounded-full bg-slate-900 px-4 py-1.5 text-[11px] font-semibold text-white hover:bg-black transition shadow-sm" do %>
-            View Notes
-          <% end %>
-          <%= link_to generate_quiz_material_path(@material), data: { turbo_method: :post }, class: "inline-flex items-center justify-center rounded-full border border-slate-200 bg-white px-4 py-1.5 text-[11px] font-semibold text-slate-700 hover:border-slate-900 hover:text-slate-900 transition shadow-sm" do %>
-            Generate Quiz
-          <% end %>
+
+        <div class="flex flex-col sm:flex-row sm:items-center gap-2 sm:justify-between">
+          <div class="inline-flex items-center gap-2">
+            <span class="text-[10px] font-semibold uppercase tracking-wider text-slate-500">Memory</span>
+            <%= form_with url: study_chat_material_path(@material), method: :post, class: "inline-flex items-center gap-1.5 flex-wrap" do |f| %>
+              <%= f.hidden_field :message, value: "" %>
+              <% @memory_mode_options.each do |option| %>
+                <% label, value = option.is_a?(Array) ? option : [option, option] %>
+                <button
+                  type="submit"
+                  name="memory_mode"
+                  value="<%= value %>"
+                  <%= "disabled" unless @chat_enabled %>
+                  class="rounded-full border px-3 py-1 text-[11px] font-semibold transition disabled:opacity-50 disabled:cursor-not-allowed <%= @memory_mode.to_s == value.to_s ? 'border-slate-900 bg-slate-900 text-white' : 'border-slate-200 bg-white text-slate-700 hover:border-slate-900 hover:text-slate-900' %>">
+                  <%= label %>
+                </button>
+              <% end %>
+            <% end %>
+          </div>
+          <div class="flex items-center gap-2">
+            <%= button_to "Reset Chat", study_chat_material_path(@material), method: :delete, class: "inline-flex items-center justify-center rounded-full border border-rose-200 bg-white px-3 py-1.5 text-[11px] font-semibold text-rose-700 hover:bg-rose-50 transition shadow-sm" %>
+          </div>
         </div>
+        <p class="text-[11px] text-slate-500">Use `Focused` for short answers, `Balanced` for normal study, `Extended` for larger context windows.</p>
+        <% unless @chat_enabled %>
+          <p class="text-[11px] font-medium text-amber-700">Study chat is locked until extraction completes. Generate a note first.</p>
+        <% end %>
       </div>
     </div>
   </div>
 
-  <div class="flex-grow overflow-y-auto px-6 sm:px-8 py-6 space-y-5 scroll-smooth custom-scrollbar" id="chat-bubbles">
+  <div class="min-h-0 flex-grow px-6 sm:px-8 py-6 space-y-5 scroll-smooth custom-scrollbar lg:overflow-y-auto" id="chat-bubbles">
     <% if @messages.any? %>
       <% @messages.each do |message| %>
         <div class="flex <%= message.role == 'user' ? 'justify-end' : 'justify-start' %>">
@@ -54,42 +84,83 @@
               <% end %>
             </div>
             <div class="<%= message.role == 'user' ? 'bg-slate-900 text-white rounded-2xl rounded-tr-none' : 'bg-slate-50 text-slate-900 rounded-2xl rounded-tl-none border border-slate-200' %> px-4 py-3 shadow-sm">
+              <% body, citations = message.content.to_s.split("\n\nCitations:\n", 2) %>
               <div class="prose prose-sm <%= message.role == 'user' ? 'prose-invert' : '' %> max-w-none text-xs sm:text-sm font-medium leading-relaxed">
-                <%= message.content %>
+                <%= simple_format(body) %>
               </div>
+              <% if message.role == "assistant" && citations.present? %>
+                <details class="mt-2 rounded-xl border border-slate-200 bg-white/60 px-3 py-2 text-[11px]">
+                  <summary class="cursor-pointer font-semibold text-slate-700">Sources</summary>
+                  <div class="mt-2 space-y-1 text-slate-600">
+                    <% citations.split("\n").reject(&:blank?).each do |line| %>
+                      <p><%= line.delete_prefix("- ").strip %></p>
+                    <% end %>
+                  </div>
+                </details>
+              <% end %>
+              <% if message.role == "assistant" %>
+                <div class="mt-2 flex justify-end">
+                  <%= button_to "Retry", regenerate_study_chat_material_path(@material), method: :post, params: { assistant_message_id: message.id, memory_mode: @memory_mode }, class: "inline-flex items-center justify-center rounded-full border border-slate-200 bg-white px-2.5 py-1 text-[10px] font-semibold text-slate-600 hover:border-slate-900 hover:text-slate-900 transition shadow-sm" %>
+                </div>
+              <% end %>
             </div>
           </div>
         </div>
       <% end %>
     <% else %>
-      <div class="h-full flex flex-col items-center justify-center text-center max-w-md mx-auto px-4">
+      <div id="chat-empty-state" class="h-full flex flex-col items-center justify-center text-center max-w-md mx-auto px-4">
         <div class="w-12 h-12 bg-slate-100 text-slate-400 flex items-center justify-center rounded-xl mb-6 border border-slate-200">
           <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
           </svg>
         </div>
-        <h2 class="text-lg font-semibold text-slate-900 mb-2">Ask anything about your material</h2>
-        <p class="text-slate-500 mb-8 leading-relaxed text-xs">
-          Start with a question or use the shortcuts above to generate smart notes and quick quizzes.
-        </p>
+        <% if @chat_enabled %>
+          <h2 class="text-lg font-semibold text-slate-900 mb-2">Ask anything about your material</h2>
+          <p class="text-slate-500 mb-8 leading-relaxed text-xs">
+            Start with a question or use the shortcuts above to generate smart notes and quick quizzes.
+          </p>
+        <% else %>
+          <h2 class="text-lg font-semibold text-slate-900 mb-2">Chat unlocks after extraction</h2>
+          <p class="text-slate-500 mb-8 leading-relaxed text-xs">
+            Generate notes after extraction succeeds, then return here to start asking questions.
+          </p>
+        <% end %>
       </div>
     <% end %>
   </div>
 
-  <div class="px-6 sm:px-8 py-5 border-t border-slate-100 bg-slate-50/30">
-    <%= form_with url: study_chat_material_path(@material), method: :post, class: "relative group" do |f| %>
-      <%= f.text_area :message, 
-          placeholder: "Ask something about this material...", 
-          required: true, 
-          rows: 1,
-          id: "chat-input",
-          class: "w-full pl-5 pr-14 py-3 bg-white border border-slate-200 rounded-2xl text-sm font-medium text-slate-900 focus:outline-none focus:border-slate-900 focus:ring-4 focus:ring-slate-900/5 transition-all resize-none shadow-sm" 
-      %>
-      <button type="submit" class="absolute right-2 bottom-2 w-9 h-9 rounded-xl bg-slate-900 text-white hover:bg-black transition-all flex items-center justify-center shadow-md">
-        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 11.5l14-6.5-6.5 14-1.5-5-5-1.5z" />
-        </svg>
-      </button>
+  <div class="relative z-10 px-6 sm:px-8 py-5 border-t border-slate-100 bg-slate-50/30">
+    <p id="chat-pending-state" class="hidden mb-2 text-[11px] font-medium text-slate-500">Generating response...</p>
+    <% if @chat_enabled %>
+      <%= form_with url: study_chat_material_path(@material), method: :post, id: "chat-compose-form", data: { stream_url: stream_study_chat_material_path(@material) }, class: "flex items-center gap-2" do |f| %>
+        <%= f.hidden_field :memory_mode, value: @memory_mode %>
+        <%= f.text_field :message, 
+            placeholder: "Ask something about this material...", 
+            required: true, 
+            id: "chat-input",
+            class: "w-full px-4 py-3 bg-white border border-slate-200 rounded-2xl text-sm font-medium text-slate-900 focus:outline-none focus:border-slate-900 focus:ring-4 focus:ring-slate-900/5 transition-all shadow-sm" 
+        %>
+        <button id="chat-send-button" type="submit" class="rounded-xl bg-slate-900 text-white hover:bg-black transition-all flex items-center justify-center shadow-md shrink-0 disabled:opacity-50 disabled:cursor-not-allowed" style="width: 2.5rem; height: 2.2rem;">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 11.5l14-6.5-6.5 14-1.5-5-5-1.5z" />
+          </svg>
+        </button>
+      <% end %>
+    <% else %>
+      <div class="flex items-center gap-2">
+        <input
+          type="text"
+          id="chat-input"
+          disabled
+          placeholder="Chat unlocks after extraction is complete..."
+          class="w-full px-4 py-3 bg-slate-100 border border-slate-200 rounded-2xl text-sm font-medium text-slate-500 cursor-not-allowed shadow-sm"
+        >
+        <button type="button" disabled class="rounded-xl bg-slate-300 text-white flex items-center justify-center shadow-md shrink-0 cursor-not-allowed" style="width: 2.5rem; height: 2.2rem;">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 11.5l14-6.5-6.5 14-1.5-5-5-1.5z" />
+          </svg>
+        </button>
+      </div>
     <% end %>
   </div>
 </div>
@@ -100,13 +171,125 @@
     if (chatLog) {
       chatLog.scrollTop = chatLog.scrollHeight;
     }
-    
-    const textarea = document.querySelector('textarea');
-    if (textarea) {
-      textarea.addEventListener('input', () => {
-        textarea.style.height = 'auto';
-        textarea.style.height = Math.min(textarea.scrollHeight, 120) + 'px';
-        if (chatLog) chatLog.scrollTop = chatLog.scrollHeight;
+
+    const composeForm = document.getElementById('chat-compose-form');
+    const pendingState = document.getElementById('chat-pending-state');
+    const input = document.getElementById('chat-input');
+    const sendButton = document.getElementById('chat-send-button');
+    const emptyState = document.getElementById('chat-empty-state');
+
+    if (composeForm && pendingState && input && sendButton) {
+      const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content;
+
+      const appendBubble = (role, content) => {
+        const wrapper = document.createElement('div');
+        wrapper.className = "flex " + (role === "user" ? "justify-end" : "justify-start");
+
+        const row = document.createElement('div');
+        row.className = "max-w-[90%] sm:max-w-[80%] flex items-start gap-3 " + (role === "user" ? "flex-row-reverse" : "");
+
+        const avatar = document.createElement('div');
+        avatar.className = "w-7 h-7 rounded-full shadow-sm flex-shrink-0 flex items-center justify-center text-[10px] font-semibold " +
+          (role === "user" ? "bg-slate-900 text-white" : "bg-slate-100 text-slate-600 border border-slate-200");
+        avatar.textContent = role === "user" ? "You" : "AI";
+
+        const bubble = document.createElement('div');
+        bubble.className = (role === "user"
+          ? "bg-slate-900 text-white rounded-2xl rounded-tr-none"
+          : "bg-slate-50 text-slate-900 rounded-2xl rounded-tl-none border border-slate-200") + " px-4 py-3 shadow-sm";
+
+        const text = document.createElement('div');
+        text.className = "whitespace-pre-wrap text-xs sm:text-sm font-medium leading-relaxed";
+        text.textContent = content || "";
+
+        bubble.appendChild(text);
+        row.appendChild(avatar);
+        row.appendChild(bubble);
+        wrapper.appendChild(row);
+        chatLog.appendChild(wrapper);
+        chatLog.scrollTop = chatLog.scrollHeight;
+        return text;
+      };
+
+      const parseSseBlocks = (buffer, onEvent) => {
+        let remaining = buffer;
+        while (true) {
+          const splitAt = remaining.indexOf("\n\n");
+          if (splitAt === -1) break;
+          const block = remaining.slice(0, splitAt);
+          remaining = remaining.slice(splitAt + 2);
+          const data = block
+            .split("\n")
+            .filter((line) => line.startsWith("data:"))
+            .map((line) => line.replace(/^data:\s?/, ""))
+            .join("\n");
+          if (!data) continue;
+          try {
+            onEvent(JSON.parse(data));
+          } catch (_e) {
+          }
+        }
+        return remaining;
+      };
+
+      composeForm.addEventListener('submit', async (event) => {
+        event.preventDefault();
+        const streamUrl = composeForm.dataset.streamUrl;
+        const message = input.value.trim();
+        if (!message || !streamUrl) return;
+
+        pendingState.classList.remove('hidden');
+        input.setAttribute('readonly', 'readonly');
+        sendButton.disabled = true;
+        if (emptyState) emptyState.classList.add("hidden");
+
+        appendBubble("user", message);
+        const assistantTextNode = appendBubble("assistant", "");
+        let assistantContent = "";
+
+        try {
+          const formData = new FormData(composeForm);
+          formData.set("message", message);
+
+          const response = await fetch(streamUrl, {
+            method: "POST",
+            headers: {
+              "Accept": "text/event-stream",
+              "X-CSRF-Token": csrfToken || ""
+            },
+            body: formData
+          });
+
+          if (!response.ok || !response.body) {
+            throw new Error("Streaming request failed.");
+          }
+
+          const reader = response.body.getReader();
+          const decoder = new TextDecoder();
+          let buffer = "";
+
+          while (true) {
+            const { done, value } = await reader.read();
+            if (done) break;
+            buffer += decoder.decode(value, { stream: true });
+            buffer = parseSseBlocks(buffer, (payload) => {
+              if (payload.type === "chunk" && payload.content) {
+                assistantContent += payload.content;
+                assistantTextNode.textContent = assistantContent;
+                chatLog.scrollTop = chatLog.scrollHeight;
+              }
+            });
+          }
+
+          input.value = "";
+        } catch (_error) {
+          assistantTextNode.textContent = "Response failed while streaming. Please retry.";
+        } finally {
+          pendingState.classList.add('hidden');
+          input.removeAttribute('readonly');
+          sendButton.disabled = false;
+          input.focus();
+        }
       });
     }
   })();

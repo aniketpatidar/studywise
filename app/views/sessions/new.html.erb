@@ -32,6 +32,17 @@
           %>
         </div>
       <% end %>
+
+      <% if google_oauth_enabled? %>
+        <div class="relative z-10 my-6 flex items-center">
+          <div class="h-px flex-1 bg-slate-200"></div>
+          <span class="px-3 text-[10px] font-semibold uppercase tracking-wider text-slate-500">or</span>
+          <div class="h-px flex-1 bg-slate-200"></div>
+        </div>
+        <%= button_to "/auth/google_oauth2", method: :post, data: { turbo: false }, class: "relative z-10 w-full inline-flex items-center justify-center gap-2 rounded-full border border-slate-200 bg-white py-3 text-[13px] font-semibold text-slate-700 hover:border-slate-900 hover:text-slate-900 transition-all shadow-sm" do %>
+          <span>Continue with Google</span>
+        <% end %>
+      <% end %>
     </div>
 
     <p class="mt-8 text-center text-sm font-medium text-slate-500">

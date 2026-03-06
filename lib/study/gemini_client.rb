@@ -50,21 +50,23 @@ module Study
         status_code: 200,
         prompt_chars: prompt.to_s.length,
         response_chars: generated.length,
-        latency_ms: elapsed_ms(started_at)
+        latency_ms: elapsed_ms(started_at),
+        prompt_preview: prompt,
+        response_preview: generated
       )
 
       generated
     rescue RubyLLM::ConfigurationError => e
       log_event(metadata:, operation: metadata[:operation] || "ask", success: false, status_code: nil,
                 prompt_chars: prompt.to_s.length, response_chars: 0, latency_ms: elapsed_ms(started_at),
-                error_message: e.message)
+                error_message: e.message, prompt_preview: prompt)
       raise ConfigurationError, e.message
     rescue RubyLLM::Error, RubyLLM::ModelNotFoundError => e
       status = e.respond_to?(:response) && e.response ? e.response.status : nil
       detail = status ? "status=#{status}" : "no_status"
       log_event(metadata:, operation: metadata[:operation] || "ask", success: false, status_code: status,
                 prompt_chars: prompt.to_s.length, response_chars: 0, latency_ms: elapsed_ms(started_at),
-                error_message: e.message)
+                error_message: e.message, prompt_preview: prompt)
       raise RequestError, "Gemini request failed via ruby_llm (#{detail}, model: #{@model}): #{e.message}"
     end
 
@@ -85,7 +87,7 @@ module Study
       ((Process.clock_gettime(Process::CLOCK_MONOTONIC) - started_at) * 1000).to_i
     end
 
-    def log_event(metadata:, operation:, success:, status_code:, prompt_chars:, response_chars:, latency_ms:, error_message: nil)
+    def log_event(metadata:, operation:, success:, status_code:, prompt_chars:, response_chars:, latency_ms:, error_message: nil, prompt_preview: nil, response_preview: nil)
       Study::LlmEventLogger.log!(
         user_id: metadata[:user_id],
         material_id: metadata[:material_id],
@@ -97,7 +99,9 @@ module Study
         prompt_chars: prompt_chars,
         response_chars: response_chars,
         latency_ms: latency_ms,
-        error_message: error_message
+        error_message: error_message,
+        prompt_preview: prompt_preview,
+        response_preview: response_preview
       )
     end
   end

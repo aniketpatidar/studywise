@@ -1,22 +1,5 @@
 <% content_for :title, "Overview | StudyWISE" %>
 
-<header class="mb-8 sm:mb-10 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-  <div>
-    <h1 class="text-2xl sm:text-3xl font-semibold text-slate-900 tracking-tight">Today’s study overview</h1>
-    <p class="mt-1 text-sm text-slate-600">
-      See how your AI assistant is performing and jump back into your work.
-    </p>
-  </div>
-  <div class="flex flex-wrap items-center gap-3">
-    <%= link_to materials_path, class: "inline-flex items-center justify-center rounded-full border border-slate-200 px-3.5 py-1.5 text-xs font-semibold text-slate-700 hover:border-slate-900 hover:text-slate-900" do %>
-      View library
-    <% end %>
-    <%= link_to new_material_path, class: "inline-flex items-center justify-center gap-2 rounded-full bg-slate-900 px-4 py-2 text-xs font-semibold text-slate-50 hover:bg-black" do %>
-      <span>New material</span>
-    <% end %>
-  </div>
-</header>
-
 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5 mb-10">
   <div class="bg-white border border-slate-200 p-4 sm:p-5 rounded-2xl shadow-sm">
     <div class="text-[11px] font-medium text-slate-500 mb-2">AI pass rate</div>
@@ -34,7 +17,7 @@
   </div>
   <div class="bg-white border border-slate-200 p-4 sm:p-5 rounded-2xl shadow-sm">
     <div class="text-[11px] font-medium text-slate-500 mb-2">AI prompts (24h)</div>
-    <div class="text-2xl font-semibold text-slate-900"><%= @llm_calls_24h.count %></div>
+    <div class="text-2xl font-semibold text-slate-900"><%= @llm_calls_count %></div>
   </div>
 </div>
 
@@ -42,21 +25,73 @@
   <div class="bg-white border border-slate-200 rounded-2xl p-5 sm:p-6">
     <div class="flex items-center justify-between mb-4">
       <h2 class="text-sm font-semibold text-slate-900">AI health</h2>
-      <span class="inline-flex items-center rounded-full bg-emerald-50 px-2 py-0.5 text-[10px] font-medium text-emerald-700 border border-emerald-100">
-        Active
+      <span class="inline-flex items-center rounded-full border px-2 py-0.5 text-[10px] font-medium <%= @llm_health_style %>">
+        <%= @llm_health_label %>
       </span>
     </div>
 
-    <div class="grid grid-cols-2 gap-4 mb-6">
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-5">
       <div class="rounded-xl border border-slate-200 bg-slate-50 px-3 py-3">
         <p class="text-[11px] font-medium text-slate-500 mb-1">Average latency</p>
         <p class="text-lg font-semibold text-slate-900"><%= @llm_avg_latency %>ms</p>
       </div>
       <div class="rounded-xl border border-slate-200 bg-slate-50 px-3 py-3">
+        <p class="text-[11px] font-medium text-slate-500 mb-1">P95 latency</p>
+        <p class="text-lg font-semibold text-slate-900"><%= @llm_p95_latency %>ms</p>
+      </div>
+      <div class="rounded-xl border border-slate-200 bg-slate-50 px-3 py-3">
         <p class="text-[11px] font-medium text-slate-500 mb-1">Pass rate</p>
         <p class="text-lg font-semibold text-slate-900"><%= @llm_success_rate %>%</p>
       </div>
+      <div class="rounded-xl border border-slate-200 bg-slate-50 px-3 py-3">
+        <p class="text-[11px] font-medium text-slate-500 mb-1">Failures (24h)</p>
+        <p class="text-lg font-semibold <%= @llm_failure_count.positive? ? 'text-rose-700' : 'text-emerald-700' %>"><%= @llm_failure_count %> <span class="text-sm text-slate-500">(<%= @llm_failure_rate %>%)</span></p>
+      </div>
     </div>
+
+    <div class="mb-6 grid grid-cols-1 lg:grid-cols-2 gap-4">
+      <div class="rounded-xl border border-slate-200 bg-slate-50 px-3 py-3">
+        <p class="text-[11px] font-medium text-slate-500 mb-1">Traffic profile</p>
+        <p class="text-sm text-slate-700">
+          Prompt chars: <span class="font-semibold text-slate-900"><%= number_with_delimiter(@llm_prompt_chars) %></span>
+          <span class="mx-1.5 text-slate-300">•</span>
+          Response chars: <span class="font-semibold text-slate-900"><%= number_with_delimiter(@llm_response_chars) %></span>
+        </p>
+      </div>
+      <div class="rounded-xl border border-slate-200 bg-slate-50 px-3 py-3">
+        <p class="text-[11px] font-medium text-slate-500 mb-1">Last failure</p>
+        <% if @llm_last_failure.present? %>
+          <p class="text-sm text-rose-800 font-medium truncate"><%= @llm_last_failure.operation.to_s.titleize %> • <%= @llm_last_failure.created_at.strftime("%H:%M") %></p>
+          <p class="text-[11px] text-slate-600 mt-1 line-clamp-2"><%= @llm_last_failure.error_message.to_s.presence || "No error message captured." %></p>
+        <% else %>
+          <p class="text-sm text-emerald-700 font-medium">No failed events in the last 24 hours.</p>
+        <% end %>
+      </div>
+    </div>
+
+    <h3 class="text-xs font-semibold text-slate-500 tracking-[0.16em] uppercase mb-3">Operation health (24h)</h3>
+    <% if @llm_operation_health.any? %>
+      <div class="mb-6 overflow-hidden rounded-xl border border-slate-200">
+        <div class="grid grid-cols-4 bg-slate-50 px-3 py-2 text-[10px] font-semibold uppercase tracking-wider text-slate-500">
+          <p>Operation</p>
+          <p class="text-center">Calls</p>
+          <p class="text-center">Success</p>
+          <p class="text-right">Avg latency</p>
+        </div>
+        <% @llm_operation_health.each do |row| %>
+          <div class="grid grid-cols-4 border-t border-slate-200 px-3 py-2.5 text-xs">
+            <p class="font-semibold text-slate-900"><%= row[:operation].to_s.titleize %></p>
+            <p class="text-center text-slate-700"><%= row[:total] %></p>
+            <p class="text-center <%= row[:success_rate] >= 95 ? 'text-emerald-700' : (row[:success_rate] >= 85 ? 'text-amber-700' : 'text-rose-700') %> font-semibold"><%= row[:success_rate] %>%</p>
+            <p class="text-right text-slate-700"><%= row[:avg_latency] %>ms</p>
+          </div>
+        <% end %>
+      </div>
+    <% else %>
+      <div class="mb-6 rounded-xl border border-dashed border-slate-200 bg-slate-50 p-4 text-xs text-slate-600">
+        No operation-level data in the last 24 hours.
+      </div>
+    <% end %>
 
     <h3 class="text-xs font-semibold text-slate-500 tracking-[0.16em] uppercase mb-3">Recent events</h3>
     <% if @llm_events.any? %>
@@ -67,7 +102,12 @@
               <p class="text-xs font-semibold text-slate-900 mb-0.5"><%= event.operation.titleize %></p>
               <p class="text-[11px] text-slate-500"><%= event.model %> • <%= event.created_at.strftime("%H:%M") %></p>
             </div>
-            <span class="h-2 w-2 rounded-full <%= event.success ? 'bg-emerald-500' : 'bg-rose-500' %>"></span>
+            <div class="flex items-center gap-2">
+              <% if policy(event).show? %>
+                <%= link_to "Details", admin_llm_event_path(event), class: "inline-flex items-center justify-center rounded-full border border-slate-200 bg-white px-2 py-1 text-[10px] font-semibold text-slate-700 hover:border-slate-900 hover:text-slate-900" %>
+              <% end %>
+              <span class="h-2 w-2 rounded-full <%= event.success ? 'bg-emerald-500' : 'bg-rose-500' %>"></span>
+            </div>
           </div>
         <% end %>
       </div>
