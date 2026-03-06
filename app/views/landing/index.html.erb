@@ -1,104 +1,152 @@
-<section class="relative overflow-hidden rounded-3xl border border-slate-200 bg-gradient-to-b from-slate-50 to-white px-6 py-12 sm:px-10 sm:py-16">
-  <div class="absolute -top-10 left-1/2 h-36 w-36 -translate-x-1/2 rounded-full bg-sky-200/40 blur-3xl"></div>
+<!-- Hero Section -->
+<section class="relative overflow-hidden rounded-3xl border border-[#1f2937] bg-[#09090b] px-6 py-16 sm:px-10 sm:py-24">
+  <!-- Background Glow Effects -->
+  <div class="absolute -top-20 left-1/2 h-64 w-64 -translate-x-1/2 rounded-full bg-[#3b82f6]/15 blur-3xl"></div>
+  <div class="absolute top-1/2 -left-20 h-48 w-48 rounded-full bg-[#bef264]/10 blur-3xl"></div>
 
-  <div class="relative mx-auto max-w-4xl text-center">
-    <p class="text-[11px] font-semibold uppercase tracking-[0.24em] text-slate-500">Studywise</p>
-    <h1 class="mt-3 text-3xl font-black tracking-tight text-slate-900 sm:text-5xl">
-      Every answer, verified from your material.
+  <div class="relative mx-auto max-w-5xl text-center">
+    <div class="inline-flex items-center gap-2 rounded-full border border-[#1f2937] bg-[#111113] px-3 py-1">
+      <span class="ds-kicker">Studywise</span>
+    </div>
+    
+    <h1 class="mt-6 ds-display">
+      Every answer, <span class="text-gradient-primary">verified</span> from your material.
     </h1>
-    <p class="mx-auto mt-4 max-w-2xl text-sm leading-relaxed text-slate-600 sm:text-base">
+    
+    <p class="mx-auto mt-6 max-w-2xl ds-body">
       Upload notes, PDFs, or YouTube lectures and move from messy content to structured notes, quizzes, and source-grounded tutor chat.
     </p>
 
+    <div class="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
+      <%= link_to "Start for free", signup_path, class: "ds-btn-primary" %>
+      <%= link_to "See how it works", "#how-it-works", class: "ds-btn-secondary" %>
+    </div>
   </div>
 
-  <div class="relative mx-auto mt-10 max-w-3xl rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:p-6">
-    <div class="flex items-center justify-between border-b border-slate-100 pb-3">
-      <p class="text-xs font-semibold text-slate-900">Study Chat Preview</p>
-      <span class="rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-semibold text-slate-600">Grounded</span>
+  <!-- Product Preview -->
+  <div class="relative mx-auto mt-16 max-w-4xl rounded-2xl border border-[#1f2937] bg-[#111113] p-4 sm:p-6">
+    <div class="flex items-center justify-between border-b border-[#1f2937] pb-4">
+      <div class="flex items-center gap-2">
+        <div class="h-2.5 w-2.5 rounded-full bg-[#ef4444]"></div>
+        <div class="h-2.5 w-2.5 rounded-full bg-[#f59e0b]"></div>
+        <div class="h-2.5 w-2.5 rounded-full bg-[#22c55e]"></div>
+      </div>
+      <span class="ds-chip">Grounded AI</span>
     </div>
 
-    <div class="mt-4 space-y-3">
-      <div class="ml-auto max-w-[82%] rounded-2xl rounded-br-sm bg-slate-900 px-3 py-2 text-xs font-medium text-white">
+    <div class="mt-6 space-y-4">
+      <div class="ml-auto max-w-[85%] rounded-2xl rounded-br-sm bg-[#bef264] px-4 py-3 text-sm font-medium text-black">
         Explain photosynthesis in simple terms.
       </div>
-      <div class="max-w-[88%] rounded-2xl rounded-bl-sm border border-slate-200 bg-slate-50 px-3 py-2 text-xs text-slate-700">
-        Photosynthesis converts light into glucose. Plants absorb sunlight, use water and carbon dioxide, and release oxygen.
-        <div class="mt-2 rounded-lg border border-slate-200 bg-white px-2 py-1 text-[10px] text-slate-500">
-          Source: "6CO2 + 6H2O + light -&gt; C6H12O6 + 6O2"
+      <div class="max-w-[90%] rounded-2xl rounded-bl-sm border border-[#1f2937] bg-[#09090b] px-4 py-3 text-sm">
+        <p style="color: #e2e8f0;">Photosynthesis converts light into glucose. Plants absorb sunlight, use water and carbon dioxide, and release oxygen.</p>
+        <div class="mt-3 rounded-lg border border-[#1f2937] bg-[#111113] px-3 py-2 text-xs">
+          <p class="font-semibold mb-1" style="color: #94a3b8;">Source:</p>
+          <p style="color: #94a3b8;">"6CO₂ + 6H₂O + light → C₆H₁₂O₆ + 6O₂"</p>
         </div>
       </div>
     </div>
   </div>
 
-  <div class="relative mx-auto mt-8 grid max-w-4xl gap-3 sm:grid-cols-3">
-    <div class="rounded-xl border border-slate-200 bg-white px-4 py-3 text-center">
-      <p class="text-xl font-black text-slate-900">50k+</p>
-      <p class="text-[11px] text-slate-500">Source lines processed</p>
+  <!-- Stats -->
+  <div class="relative mx-auto mt-12 grid max-w-4xl gap-4 sm:grid-cols-3">
+    <div class="rounded-xl border border-[#1f2937] bg-[#111113] px-6 py-4 text-center">
+      <p class="text-3xl font-black" style="color: #ffffff;">50k+</p>
+      <p class="mt-1 text-xs font-medium" style="color: #94a3b8;">Source lines processed</p>
     </div>
-    <div class="rounded-xl border border-slate-200 bg-white px-4 py-3 text-center">
-      <p class="text-xl font-black text-slate-900">0%</p>
-      <p class="text-[11px] text-slate-500">Hallucination goal bias</p>
+    <div class="rounded-xl border border-[#1f2937] bg-[#111113] px-6 py-4 text-center">
+      <p class="text-3xl font-black" style="color: #ffffff;">0%</p>
+      <p class="mt-1 text-xs font-medium" style="color: #94a3b8;">Hallucination goal bias</p>
     </div>
-    <div class="rounded-xl border border-slate-200 bg-white px-4 py-3 text-center">
-      <p class="text-xl font-black text-slate-900">3 steps</p>
-      <p class="text-[11px] text-slate-500">From upload to quiz</p>
+    <div class="rounded-xl border border-[#1f2937] bg-[#111113] px-6 py-4 text-center">
+      <p class="text-3xl font-black" style="color: #ffffff;">3 steps</p>
+      <p class="mt-1 text-xs font-medium" style="color: #94a3b8;">From upload to quiz</p>
     </div>
   </div>
 </section>
 
-<section id="features" class="mt-10 rounded-3xl border border-slate-200 bg-white p-6 sm:p-8">
-  <div class="flex items-end justify-between gap-3">
+<!-- Features Section -->
+<section id="features" class="mt-16 rounded-3xl border border-[#1f2937] bg-[#09090b] p-6 sm:p-10">
+  <div class="flex flex-col sm:flex-row items-start sm:items-end justify-between gap-4">
     <div>
-      <p class="text-[11px] font-semibold uppercase tracking-[0.22em] text-slate-500">Why It Works</p>
-      <h2 class="mt-1 text-2xl font-black tracking-tight text-slate-900">Control access. Keep Q&amp;A trusted.</h2>
+      <p class="ds-kicker">Why It Works</p>
+      <h2 class="mt-3 ds-heading-md">Control access. Keep Q&amp;A trusted.</h2>
     </div>
   </div>
 
-  <div class="mt-6 grid gap-4 md:grid-cols-3">
-    <article class="rounded-2xl border border-slate-200 bg-slate-50 p-4">
-      <p class="text-sm font-semibold text-slate-900">Source-aware notes</p>
-      <p class="mt-1 text-xs leading-relaxed text-slate-600">Generate structured summaries, key concepts, and practice questions from your uploaded material.</p>
+  <div class="mt-10 grid gap-5 md:grid-cols-3">
+    <article class="group rounded-2xl border border-[#1f2937] bg-[#111113] p-6 transition-all hover:border-[#bef264]/40 hover:bg-[#111113]/80">
+      <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-[#bef264]/10">
+        <svg class="h-5 w-5" viewBox="0 0 20 20" fill="#bef264">
+          <path d="M10 2a1 1 0 011 1v1.323l3.954 1.582 1.599-.8a1 1 0 011.342.447l1 2a1 1 0 01-.447 1.342l-1.582.799V17a1 1 0 01-1 1H3a1 1 0 01-1-1V9.692l-1.582-.798a1 1 0 01-.447-1.342l1-2a1 1 0 011.342-.447l1.599.8L8 4.323V3a1 1 0 011-1z"/>
+        </svg>
+      </div>
+      <p class="mt-4 text-base font-semibold" style="color: #ffffff;">Source-aware notes</p>
+      <p class="mt-2 text-sm leading-relaxed" style="color: #94a3b8;">Generate structured summaries, key concepts, and practice questions from your uploaded material.</p>
     </article>
-    <article class="rounded-2xl border border-slate-200 bg-slate-50 p-4">
-      <p class="text-sm font-semibold text-slate-900">Verified chat replies</p>
-      <p class="mt-1 text-xs leading-relaxed text-slate-600">Study chat keeps context budgeted and appends citation snippets from extracted source text.</p>
+    
+    <article class="group rounded-2xl border border-[#1f2937] bg-[#111113] p-6 transition-all hover:border-[#bef264]/40 hover:bg-[#111113]/80">
+      <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-[#bef264]/10">
+        <svg class="h-5 w-5" viewBox="0 0 20 20" fill="#bef264">
+          <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+        </svg>
+      </div>
+      <p class="mt-4 text-base font-semibold" style="color: #ffffff;">Verified chat replies</p>
+      <p class="mt-2 text-sm leading-relaxed" style="color: #94a3b8;">Study chat keeps context budgeted and appends citation snippets from extracted source text.</p>
     </article>
-    <article class="rounded-2xl border border-slate-200 bg-slate-50 p-4">
-      <p class="text-sm font-semibold text-slate-900">Assessment loops</p>
-      <p class="mt-1 text-xs leading-relaxed text-slate-600">Generate 5-question quizzes, submit answers, and use results to guide follow-up tutoring.</p>
+    
+    <article class="group rounded-2xl border border-[#1f2937] bg-[#111113] p-6 transition-all hover:border-[#bef264]/40 hover:bg-[#111113]/80">
+      <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-[#bef264]/10">
+        <svg class="h-5 w-5" viewBox="0 0 20 20" fill="#bef264">
+          <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z"/>
+          <path fill-rule="evenodd" d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 4a1 1 0 000 2h.01a1 1 0 100-2H7zm3 0a1 1 0 000 2h3a1 1 0 100-2h-3zm-3 4a1 1 0 100 2h.01a1 1 0 100-2H7zm3 0a1 1 0 100 2h3a1 1 0 100-2h-3z" clip-rule="evenodd"/>
+        </svg>
+      </div>
+      <p class="mt-4 text-base font-semibold" style="color: #ffffff;">Assessment loops</p>
+      <p class="mt-2 text-sm leading-relaxed" style="color: #94a3b8;">Generate 5-question quizzes, submit answers, and use results to guide follow-up tutoring.</p>
     </article>
   </div>
 </section>
 
-<section id="how-it-works" class="mt-10">
-  <div class="rounded-3xl border border-slate-200 bg-gradient-to-b from-slate-50 to-white p-6 sm:p-8">
-    <h2 class="text-2xl font-black tracking-tight text-slate-900">From transcript to verified answer in three steps</h2>
+<!-- How It Works Section -->
+<section id="how-it-works" class="mt-16">
+  <div class="rounded-3xl border border-[#1f2937] bg-[#09090b] p-6 sm:p-10">
+    <p class="ds-kicker">Workflow</p>
+    <h2 class="mt-3 ds-heading-md">From transcript to verified answer in three steps</h2>
 
-    <div class="mt-6 grid gap-4 md:grid-cols-3">
-      <article class="rounded-2xl border border-slate-200 bg-white p-4">
-        <p class="text-[10px] font-semibold uppercase tracking-[0.2em] text-slate-500">Step 1</p>
-        <p class="mt-2 text-base font-bold text-slate-900">Upload material</p>
-        <p class="mt-1 text-xs text-slate-600">Text, PDF, DOCX, PPTX, or a YouTube link.</p>
+    <div class="mt-10 grid gap-6 md:grid-cols-3">
+      <article class="relative rounded-2xl border border-[#1f2937] bg-[#111113] p-6">
+        <div class="flex items-center gap-3">
+          <div class="flex h-8 w-8 items-center justify-center rounded-full bg-[#bef264] text-xs font-black text-black">1</div>
+          <p class="text-base font-semibold" style="color: #ffffff;">Upload material</p>
+        </div>
+        <p class="mt-3 text-sm" style="color: #94a3b8;">Text, PDF, DOCX, PPTX, or a YouTube link.</p>
       </article>
-      <article class="rounded-2xl border border-slate-200 bg-white p-4">
-        <p class="text-[10px] font-semibold uppercase tracking-[0.2em] text-slate-500">Step 2</p>
-        <p class="mt-2 text-base font-bold text-slate-900">Generate note + quiz</p>
-        <p class="mt-1 text-xs text-slate-600">Create study notes and exact 5-question MCQ checks.</p>
+      
+      <article class="relative rounded-2xl border border-[#1f2937] bg-[#111113] p-6">
+        <div class="flex items-center gap-3">
+          <div class="flex h-8 w-8 items-center justify-center rounded-full bg-[#bef264] text-xs font-black text-black">2</div>
+          <p class="text-base font-semibold" style="color: #ffffff;">Generate note + quiz</p>
+        </div>
+        <p class="mt-3 text-sm" style="color: #94a3b8;">Create study notes and exact 5-question MCQ checks.</p>
       </article>
-      <article class="rounded-2xl border border-slate-200 bg-white p-4">
-        <p class="text-[10px] font-semibold uppercase tracking-[0.2em] text-slate-500">Step 3</p>
-        <p class="mt-2 text-base font-bold text-slate-900">Ask with citations</p>
-        <p class="mt-1 text-xs text-slate-600">Use study chat with memory controls and source-grounded responses.</p>
+      
+      <article class="relative rounded-2xl border border-[#1f2937] bg-[#111113] p-6">
+        <div class="flex items-center gap-3">
+          <div class="flex h-8 w-8 items-center justify-center rounded-full bg-[#bef264] text-xs font-black text-black">3</div>
+          <p class="text-base font-semibold" style="color: #ffffff;">Ask with citations</p>
+        </div>
+        <p class="mt-3 text-sm" style="color: #94a3b8;">Use study chat with memory controls and source-grounded responses.</p>
       </article>
     </div>
   </div>
 </section>
 
-<section class="mt-10 rounded-3xl border border-slate-200 bg-slate-900 px-6 py-10 text-center text-white sm:px-8">
-  <h2 class="text-2xl font-black tracking-tight">Your course. Every answer verified from the transcript.</h2>
-  <p class="mx-auto mt-2 max-w-2xl text-sm text-slate-300">Start with one sample material and see notes, quiz, and chat flow in minutes.</p>
-  <div class="mt-6">
-    <%= link_to "Start now", signup_path, class: "inline-flex items-center justify-center rounded-full bg-white px-6 py-2.5 text-sm font-semibold text-slate-900 hover:bg-slate-100" %>
+<!-- CTA Section -->
+<section class="mt-16 rounded-3xl border border-[#1f2937] bg-gradient-to-br from-[#09090b] to-[#111113] px-6 py-16 text-center sm:px-10 sm:py-20">
+  <h2 class="ds-heading-md">Your course. Every answer verified from the transcript.</h2>
+  <p class="mx-auto mt-4 max-w-2xl text-sm" style="color: #94a3b8;">Start with one sample material and see notes, quiz, and chat flow in minutes.</p>
+  <div class="mt-10">
+    <%= link_to "Start now", signup_path, class: "ds-btn-primary" %>
   </div>
 </section>

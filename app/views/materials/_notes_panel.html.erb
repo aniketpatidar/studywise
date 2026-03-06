@@ -1,14 +1,14 @@
-<article id="<%= dom_id(material, :notes_panel) %>" class="bg-white border border-slate-200 rounded-2xl p-5 sm:p-6 shadow-sm h-full flex flex-col">
+<article id="<%= dom_id(material, :notes_panel) %>" class="bg-[#09090b] border border-[#1f2937] rounded-2xl p-5 sm:p-6 shadow-lg h-full flex flex-col">
   <div class="flex items-center justify-between mb-4">
-    <h2 class="text-sm font-semibold text-slate-900">Smart Notes</h2>
-    <%= link_to "All notes", material_notes_path(material), class: "text-[11px] font-medium text-slate-500 hover:text-slate-900 tracking-wider uppercase" %>
+    <h2 class="text-sm font-semibold text-white">Smart Notes</h2>
+    <%= link_to "All notes", material_notes_path(material), class: "text-[11px] font-medium uppercase tracking-wider hover:text-[#bef264] transition-colors", style: "color: #94a3b8;" %>
   </div>
   <div id="notes" class="space-y-3 flex-grow overflow-y-auto pr-1 custom-scrollbar">
     <% if notes.any? %>
       <%= render partial: "materials/note", collection: notes, as: :note %>
     <% else %>
-      <div id="empty-notes" class="py-10 flex flex-col items-center justify-center border border-dashed border-slate-200 rounded-xl text-center bg-slate-50">
-        <p class="text-[11px] text-slate-600">No notes generated yet.</p>
+      <div id="empty-notes" class="py-10 flex flex-col items-center justify-center border border-dashed border-[#1f2937] rounded-xl text-center bg-[#111113]">
+        <p class="text-[11px]" style="color: #94a3b8;">No notes generated yet.</p>
       </div>
     <% end %>
   </div>

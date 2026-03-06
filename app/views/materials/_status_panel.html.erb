@@ -3,13 +3,13 @@
 <% note_error_message = local_assigns.fetch(:note_error_message, Study::GenerationTracker.note_error(material.id)) %>
 <% quiz_error_message = local_assigns.fetch(:quiz_error_message, Study::GenerationTracker.quiz_error(material.id)) %>
 
-<article id="<%= dom_id(material, :status_panel) %>" class="bg-white border border-slate-200 rounded-2xl p-5 sm:p-6 shadow-sm h-full flex flex-col">
+<article id="<%= dom_id(material, :status_panel) %>" class="bg-[#09090b] border border-[#1f2937] rounded-2xl p-5 sm:p-6 shadow-lg h-full flex flex-col">
   <div class="flex items-center justify-between mb-4">
-    <h2 class="text-sm font-semibold text-slate-900">Progress & Source Details</h2>
-    <span class="inline-flex items-center rounded-full bg-slate-50 px-2 py-0.5 text-[10px] font-medium text-slate-600 border border-slate-200 tracking-wider uppercase"><%= material.source_type %></span>
+    <h2 class="text-sm font-semibold text-white">Progress & Source Details</h2>
+    <span class="inline-flex items-center rounded-full bg-[#111113] px-2 py-0.5 text-[10px] font-medium border border-[#1f2937] uppercase tracking-wider" style="color: #94a3b8;"><%= material.source_type %></span>
   </div>
 
-  <div class="mb-6 rounded-xl border border-slate-200 bg-slate-50 p-3">
+  <div class="mb-6 rounded-xl border border-[#1f2937] bg-[#111113] p-3">
     <% extraction_state = if note_generation_in_progress
       :in_progress
     elsif material.processed?
@@ -21,9 +21,9 @@
     end %>
     <% extraction_dot_class = case extraction_state
     when :in_progress then "bg-amber-500 animate-pulse"
-    when :complete then "bg-emerald-500"
+    when :complete then "bg-[#bef264]"
     when :failed then "bg-rose-500"
-    else "bg-slate-300"
+    else "bg-[#374151]"
     end %>
     <% extraction_label = case extraction_state
     when :in_progress then "in progress"
@@ -37,96 +37,96 @@
     <% note_time = material.notes.recent.first&.created_at %>
     <% quiz_time = material.quizzes.recent.first&.created_at %>
     <ol class="space-y-2">
-      <li class="flex items-center gap-2 text-[11px] <%= material.persisted? ? 'text-slate-900' : 'text-slate-500' %>">
-        <span class="inline-block h-2 w-2 rounded-full <%= material.persisted? ? 'bg-emerald-500' : 'bg-slate-300' %>"></span>
-        <span>1. Uploaded <span class="text-slate-500">(<%= material.created_at.strftime("%b %d, %H:%M") %>)</span></span>
+      <li class="flex items-center gap-2 text-[11px] <%= material.persisted? ? '' : 'opacity-50' %>" style="<%= material.persisted? ? 'color: #e2e8f0;' : 'color: #94a3b8;' %>">
+        <span class="inline-block h-2 w-2 rounded-full <%= material.persisted? ? 'bg-[#bef264]' : 'bg-[#374151]' %>"></span>
+        <span>1. Uploaded <span style="color: #94a3b8;">(<%= material.created_at.strftime("%b %d, %H:%M") %>)</span></span>
       </li>
-      <li class="flex items-center gap-2 text-[11px] <%= extracted_ready ? 'text-slate-900' : 'text-slate-500' %>">
+      <li class="flex items-center gap-2 text-[11px]" style="<%= extracted_ready ? 'color: #e2e8f0;' : 'color: #94a3b8;' %>">
         <span class="inline-block h-2 w-2 rounded-full <%= extraction_dot_class %>"></span>
-        <span>2. Extracted <span class="text-slate-500">(<%= extraction_label %>)</span></span>
+        <span>2. Extracted <span style="color: #94a3b8;">(<%= extraction_label %>)</span></span>
       </li>
-      <li class="flex items-center gap-2 text-[11px] <%= note_ready ? 'text-slate-900' : 'text-slate-500' %>">
-        <span class="inline-block h-2 w-2 rounded-full <%= note_ready ? 'bg-emerald-500' : 'bg-slate-300' %>"></span>
-        <span>3. Note ready <span class="text-slate-500"><%= note_time ? "(#{note_time.strftime('%b %d, %H:%M')})" : "(waiting)" %></span></span>
+      <li class="flex items-center gap-2 text-[11px]" style="<%= note_ready ? 'color: #e2e8f0;' : 'color: #94a3b8;' %>">
+        <span class="inline-block h-2 w-2 rounded-full <%= note_ready ? 'bg-[#bef264]' : 'bg-[#374151]' %>"></span>
+        <span>3. Note ready <span style="color: #94a3b8;"><%= note_time ? "(#{note_time.strftime('%b %d, %H:%M')})" : "(waiting)" %></span></span>
       </li>
-      <li class="flex items-center gap-2 text-[11px] <%= quiz_ready ? 'text-slate-900' : 'text-slate-500' %>">
-        <span class="inline-block h-2 w-2 rounded-full <%= quiz_ready ? 'bg-emerald-500' : 'bg-slate-300' %>"></span>
-        <span>4. Quiz ready <span class="text-slate-500"><%= quiz_time ? "(#{quiz_time.strftime('%b %d, %H:%M')})" : "(waiting)" %></span></span>
+      <li class="flex items-center gap-2 text-[11px]" style="<%= quiz_ready ? 'color: #e2e8f0;' : 'color: #94a3b8;' %>">
+        <span class="inline-block h-2 w-2 rounded-full <%= quiz_ready ? 'bg-[#bef264]' : 'bg-[#374151]' %>"></span>
+        <span>4. Quiz ready <span style="color: #94a3b8;"><%= quiz_time ? "(#{quiz_time.strftime('%b %d, %H:%M')})" : "(waiting)" %></span></span>
       </li>
     </ol>
   </div>
 
   <div class="space-y-3 mb-6">
     <% if material.source_file.attached? %>
-      <div class="flex items-start gap-3 p-3 bg-slate-50 rounded-xl border border-slate-200">
-        <div class="text-slate-400 mt-0.5">
+      <div class="flex items-start gap-3 p-3 bg-[#111113] rounded-xl border border-[#1f2937]">
+        <div style="color: #64748b; margin-top: 2px;">
           <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
           </svg>
         </div>
         <div>
-          <p class="text-[10px] font-medium text-slate-500 mb-0.5 uppercase tracking-wider">Filename</p>
-          <p class="text-xs font-medium text-slate-900 break-all"><%= material.source_file.filename %></p>
+          <p class="text-[10px] font-medium uppercase tracking-wider mb-0.5" style="color: #94a3b8;">Filename</p>
+          <p class="text-xs font-medium break-all" style="color: #e2e8f0;"><%= material.source_file.filename %></p>
         </div>
       </div>
     <% end %>
 
     <% if material.source_url.present? %>
-       <div class="flex items-start gap-3 p-3 bg-slate-50 rounded-xl border border-slate-200">
-        <div class="text-slate-400 mt-0.5">
+       <div class="flex items-start gap-3 p-3 bg-[#111113] rounded-xl border border-[#1f2937]">
+        <div style="color: #64748b; margin-top: 2px;">
           <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.828a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
           </svg>
         </div>
         <div>
-          <p class="text-[10px] font-medium text-slate-500 mb-0.5 uppercase tracking-wider">Source URL</p>
-          <%= link_to material.source_url, material.source_url, target: "_blank", rel: "noopener", class: "text-xs font-medium text-slate-900 hover:text-slate-600 hover:underline break-all" %>
+          <p class="text-[10px] font-medium uppercase tracking-wider mb-0.5" style="color: #94a3b8;">Source URL</p>
+          <%= link_to material.source_url, material.source_url, target: "_blank", rel: "noopener", class: "text-xs font-medium hover:underline break-all", style: "color: #e2e8f0;" %>
         </div>
       </div>
     <% end %>
   </div>
 
-  <div class="mb-4 rounded-xl border <%= extraction_state == :failed ? 'border-rose-200 bg-rose-50' : 'border-slate-200 bg-slate-50' %> px-3 py-2">
+  <div class="mb-4 rounded-xl border <%= extraction_state == :failed ? 'border-rose-500/30 bg-rose-500/10' : 'border-[#1f2937] bg-[#111113]' %> px-3 py-2">
     <% if extraction_state == :waiting %>
-      <p class="text-[11px] text-slate-700">Extraction has not started yet. Click `Generate Note` to start extraction and note generation.</p>
+      <p class="text-[11px]" style="color: #e2e8f0;">Extraction has not started yet. Click `Generate Note` to start extraction and note generation.</p>
     <% elsif extraction_state == :in_progress %>
-      <p class="text-[11px] text-slate-700">Extraction is running in the background. Refresh in a few seconds to see updated progress.</p>
+      <p class="text-[11px]" style="color: #e2e8f0;">Extraction is running in the background. Refresh in a few seconds to see updated progress.</p>
     <% elsif extraction_state == :failed %>
-      <p class="text-[11px] text-rose-800">Extraction failed. Fix the source input and retry extraction.</p>
+      <p class="text-[11px]" style="color: #fca5a5;">Extraction failed. Fix the source input and retry extraction.</p>
     <% else %>
-      <p class="text-[11px] text-emerald-700">Extraction complete. You can continue with notes, quizzes, and study chat.</p>
+      <p class="text-[11px]" style="color: #bbf7d0;">Extraction complete. You can continue with notes, quizzes, and study chat.</p>
     <% end %>
   </div>
 
   <div class="mb-4">
-    <%= link_to "Preview Extraction", preview_extraction_material_path(material), class: "w-full inline-flex items-center justify-center rounded-full border border-slate-200 px-4 py-2 text-xs font-semibold text-slate-700 hover:border-slate-900 hover:text-slate-900 bg-white" %>
+    <%= link_to "Preview Extraction", preview_extraction_material_path(material), class: "w-full inline-flex items-center justify-center rounded-full border border-[#1f2937] px-4 py-2 text-xs font-semibold hover:border-[#bef264] hover:text-[#bef264] transition-colors bg-[#09090b]", style: "color: #e2e8f0;" %>
   </div>
 
   <% if extraction_state == :waiting || extraction_state == :failed %>
     <div class="mb-4">
-      <%= button_to (extraction_state == :failed ? "Retry Extraction" : "Start Extraction"), generate_note_material_path(material), method: :post, params: { idempotency_key: SecureRandom.uuid }, class: "w-full inline-flex items-center justify-center rounded-full bg-slate-900 px-4 py-2 text-xs font-semibold text-white hover:bg-black", data: { turbo_submits_with: "Starting..." } %>
+      <%= button_to (extraction_state == :failed ? "Retry Extraction" : "Start Extraction"), generate_note_material_path(material), method: :post, params: { idempotency_key: SecureRandom.uuid }, class: "w-full inline-flex items-center justify-center rounded-full bg-[#bef264] px-4 py-2 text-xs font-semibold text-black hover:bg-[#a3e635] transition-colors shadow-[0_0_24px_rgba(190,242,100,0.3)]", data: { turbo_submits_with: "Starting..." } %>
     </div>
   <% end %>
 
   <% if note_error_message.present? %>
-    <div class="mb-4 rounded-xl border border-rose-200 bg-rose-50 px-3 py-2 text-[11px] text-rose-800">
+    <div class="mb-4 rounded-xl border border-rose-500/30 bg-rose-500/10 px-3 py-2 text-[11px]" style="color: #fca5a5;">
       Note generation failed: <span class="font-medium"><%= note_error_message %></span>
     </div>
   <% end %>
 
   <% if quiz_error_message.present? %>
-    <div class="mb-4 rounded-xl border border-rose-200 bg-rose-50 px-3 py-2 text-[11px] text-rose-800">
+    <div class="mb-4 rounded-xl border border-rose-500/30 bg-rose-500/10 px-3 py-2 text-[11px]" style="color: #fca5a5;">
       Quiz generation failed: <span class="font-medium"><%= quiz_error_message %></span>
     </div>
   <% end %>
 
-  <div class="mt-auto pt-4 border-t border-slate-200">
-    <p class="text-[10px] font-semibold uppercase tracking-[0.18em] text-slate-500 mb-2">Quick Links</p>
+  <div class="mt-auto pt-4 border-t border-[#1f2937]">
+    <p class="text-[10px] font-semibold uppercase tracking-[0.18em] mb-2" style="color: #94a3b8;">Quick Links</p>
     <div class="flex flex-wrap gap-2">
-      <%= link_to "Open Notes", material_notes_path(material), class: "inline-flex items-center justify-center rounded-full border border-slate-200 bg-white px-3 py-1.5 text-[11px] font-semibold text-slate-700 hover:border-slate-900 hover:text-slate-900" %>
-      <%= link_to "Open Study Chat", study_chat_material_path(material), class: "inline-flex items-center justify-center rounded-full border border-slate-200 bg-white px-3 py-1.5 text-[11px] font-semibold text-slate-700 hover:border-slate-900 hover:text-slate-900" %>
+      <%= link_to "Open Notes", material_notes_path(material), class: "inline-flex items-center justify-center rounded-full border border-[#1f2937] bg-[#09090b] px-3 py-1.5 text-[11px] font-semibold hover:border-[#bef264] hover:text-[#bef264] transition-colors" %>
+      <%= link_to "Open Study Chat", study_chat_material_path(material), class: "inline-flex items-center justify-center rounded-full border border-[#1f2937] bg-[#09090b] px-3 py-1.5 text-[11px] font-semibold hover:border-[#bef264] hover:text-[#bef264] transition-colors" %>
       <% if material.quizzes.any? %>
-        <%= link_to "Latest Quiz", material_quiz_path(material, material.quizzes.recent.first), class: "inline-flex items-center justify-center rounded-full border border-slate-200 bg-white px-3 py-1.5 text-[11px] font-semibold text-slate-700 hover:border-slate-900 hover:text-slate-900" %>
+        <%= link_to "Latest Quiz", material_quiz_path(material, material.quizzes.recent.first), class: "inline-flex items-center justify-center rounded-full border border-[#1f2937] bg-[#09090b] px-3 py-1.5 text-[11px] font-semibold hover:border-[#bef264] hover:text-[#bef264] transition-colors" %>
       <% end %>
     </div>
   </div>

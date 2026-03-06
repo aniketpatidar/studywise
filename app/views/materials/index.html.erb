@@ -1,17 +1,17 @@
 <% content_for :title, "Study Chat | StudyWISE" %>
 
-<header class="mb-8 sm:mb-10 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+<header class="mb-8 sm:mb-10 flex flex-col gap-4 sm:items-center sm:justify-between">
   <div>
-    <h1 class="text-2xl sm:text-3xl font-semibold text-slate-900 tracking-tight">Your study library</h1>
+    <h1 class="text-2xl sm:text-3xl font-semibold text-white tracking-tight">Your study library</h1>
   </div>
 </header>
 
 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 pb-20">
   <% if @materials.any? %>
     <% @materials.each do |material| %>
-      <div class="group bg-white border border-slate-200 rounded-2xl p-5 sm:p-6 shadow-sm flex flex-col h-full">
+      <div class="group bg-[#09090b] border border-[#1f2937] rounded-2xl p-5 sm:p-6 shadow-lg flex flex-col h-full hover:border-[#bef264]/40 transition-all">
         <div class="relative z-10 flex grow flex-col">
-          <div class="w-10 h-10 bg-slate-100 rounded-xl flex items-center justify-center text-slate-600 text-sm mb-4">
+          <div class="w-10 h-10 bg-[#111113] border border-[#1f2937] rounded-xl flex items-center justify-center text-[#94a3b8] text-sm mb-4">
             <% if material.source_type == 'url' %>
               <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.828a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
@@ -22,26 +22,26 @@
               </svg>
             <% end %>
           </div>
-          
-          <h3 class="text-sm sm:text-base font-semibold text-slate-900 mb-2 line-clamp-2 leading-snug">
+
+          <h3 class="text-sm sm:text-base font-semibold text-white mb-2 line-clamp-2 leading-snug">
             <%= material.title %>
           </h3>
-          
-          <div class="flex flex-wrap items-center gap-2 mb-5 text-[11px] font-medium text-slate-600">
-            <span class="px-2.5 py-1 rounded-full bg-slate-100 text-slate-700">
+
+          <div class="flex flex-wrap items-center gap-2 mb-5 text-[11px] font-medium">
+            <span class="px-2.5 py-1 rounded-full bg-[#111113] border border-[#1f2937]" style="color: #e2e8f0;">
               <%= material.source_type.to_s.titleize %>
             </span>
-            <div class="flex items-center gap-1.5 text-[11px] text-slate-500">
-              <span class="w-1.5 h-1.5 rounded-full <%= material.status == 'completed' ? 'bg-emerald-500' : (material.status == 'processing' ? 'bg-amber-500' : 'bg-rose-500') %>"></span>
+            <div class="flex items-center gap-1.5 text-[11px]" style="color: #94a3b8;">
+              <span class="w-1.5 h-1.5 rounded-full <%= material.status == 'completed' ? 'bg-[#bef264]' : (material.status == 'processing' ? 'bg-amber-500' : 'bg-rose-500') %>"></span>
               <span><%= material.status.to_s.humanize %></span>
             </div>
           </div>
 
           <div class="mt-auto flex items-center gap-2">
-            <%= link_to study_chat_material_path(material), class: "flex-grow py-2.5 bg-slate-900 text-white text-center rounded-full font-semibold text-xs tracking-tight hover:bg-black transition" do %>
+            <%= link_to study_chat_material_path(material), class: "flex-grow py-2.5 bg-[#bef264] text-black text-center rounded-full font-semibold text-xs tracking-tight hover:bg-[#a3e635] transition shadow-[0_0_24px_rgba(190,242,100,0.3)]" do %>
               Open study chat
             <% end %>
-            <%= link_to material_path(material), class: "p-2.5 bg-white border border-slate-200 rounded-full text-slate-500 hover:text-slate-900 hover:border-slate-900 transition" do %>
+            <%= link_to material_path(material), class: "p-2.5 bg-[#09090b] border border-[#1f2937] rounded-full text-[#94a3b8] hover:text-[#bef264] hover:border-[#bef264] transition" do %>
               <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
@@ -52,12 +52,12 @@
       </div>
     <% end %>
   <% else %>
-    <div class="col-span-full py-16 flex flex-col items-center justify-center border border-dashed border-slate-200 rounded-2xl text-center bg-white">
-      <h3 class="text-lg font-semibold text-slate-900 mb-2">Your library is empty</h3>
-      <p class="text-slate-600 text-sm max-w-sm leading-relaxed mb-6 px-6">
+    <div class="col-span-full py-16 flex flex-col items-center justify-center border border-dashed border-[#1f2937] rounded-2xl text-center bg-[#09090b]">
+      <h3 class="text-lg font-semibold text-white mb-2">Your library is empty</h3>
+      <p class="text-slate-400 text-sm max-w-sm leading-relaxed mb-6 px-6" style="color: #94a3b8;">
         Upload a file or link a lecture to start chatting, generating notes, and building quizzes.
       </p>
-      <%= link_to "Upload first material", new_material_path, class: "px-4 py-2 bg-slate-900 text-white rounded-full font-semibold text-xs tracking-tight hover:bg-black transition" %>
+      <%= link_to "Upload first material", new_material_path, class: "px-4 py-2 bg-[#bef264] text-black rounded-full font-semibold text-xs tracking-tight hover:bg-[#a3e635] transition shadow-[0_0_24px_rgba(190,242,100,0.3)]" %>
     </div>
   <% end %>
 </div>

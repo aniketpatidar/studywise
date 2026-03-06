@@ -4,35 +4,248 @@
 @source "../../../config/routes.rb";
 
 @theme {
-  --font-sans: "Inter", "Poppins", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  
-  --color-bg-base: #F8F9FB;
-  --color-bg-panel: #FFFFFF;
-  --color-bg-sidebar: #FFFFFF;
-  --color-text-strong: #2D2E32;
-  --color-text-muted: #6C6D70;
-  --color-line: #E8E9EB;
-  --color-line-strong: #D1D3D6;
-  --color-brand: #6C5DD3;
-  --color-brand-soft: rgba(108, 93, 211, 0.1);
-  --color-brand-dark: #5849C4;
-  --color-accent: #FF754C;
-  --color-success: #7FBA7A;
-  --color-danger: #FF6A6A;
-  
-  --radius-sm: 8px;
-  --radius-md: 12px;
-  --radius-lg: 16px;
-  --radius-xl: 24px;
+  --font-sans: "Inter", "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif;
 
-  --shadow-sm: 0 4px 12px rgba(0, 0, 0, 0.05);
-  --shadow-md: 0 8px 24px rgba(108, 93, 211, 0.12);
-  --shadow-lg: 0 20px 40px rgba(0, 0, 0, 0.08);
+  /* Xcraft Color Palette - Dark Theme */
+  --color-background: #000000;
+  --color-surface: #09090b;
+  --color-surface-elevated: #111113;
+  
+  --color-foreground: #ffffff;
+  --color-foreground-muted: #94a3b8;
+  
+  --color-primary: #bef264;
+  --color-primary-hover: #a3e635;
+  --color-primary-active: #84cc16;
+  
+  --color-border: #1f2937;
+  --color-border-light: #374151;
+  
+  --color-accent-glow: #3b82f6;
+  --color-accent-cyan: #06b6d4;
+
+  --radius-sm: 12px;
+  --radius-md: 16px;
+  --radius-lg: 20px;
+  --radius-xl: 24px;
+  --radius-2xl: 32px;
+  --radius-3xl: 40px;
+  --radius-full: 9999px;
+
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.5);
+  --shadow-md: 0 4px 8px rgba(0, 0, 0, 0.6);
+  --shadow-lg: 0 10px 24px rgba(0, 0, 0, 0.7);
+  --shadow-glow-primary: 0 0 24px rgba(190, 242, 100, 0.3);
+  --shadow-glow-blue: 0 0 32px rgba(59, 130, 246, 0.25);
 }
 
 @layer base {
+  :root {
+    --space-1: 0.25rem;
+    --space-2: 0.5rem;
+    --space-3: 0.75rem;
+    --space-4: 1rem;
+    --space-5: 1.25rem;
+    --space-6: 1.5rem;
+    --space-8: 2rem;
+    --space-10: 2.5rem;
+    --space-12: 3rem;
+    --space-16: 4rem;
+    --space-20: 5rem;
+    --space-24: 6rem;
+    --space-32: 8rem;
+  }
+
   body {
-    @apply bg-bg-base text-text-strong antialiased font-sans;
+    @apply text-foreground antialiased font-sans;
+    background-color: var(--color-background);
+    background-image: 
+      radial-gradient(800px 400px at 85% -10%, rgba(59, 130, 246, 0.12), transparent 60%),
+      radial-gradient(600px 300px at -5% 10%, rgba(6, 182, 212, 0.08), transparent 55%);
+    background-attachment: fixed;
+  }
+
+  a {
+    @apply transition-colors duration-200;
+  }
+}
+
+@layer components {
+  /* Shell & Container */
+  .ds-shell {
+    @apply min-h-screen flex flex-col;
+  }
+
+  .ds-container {
+    @apply mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8;
+  }
+
+  /* Navigation */
+  .ds-nav {
+    @apply fixed inset-x-0 top-0 z-50 border-b backdrop-blur-md;
+    border-color: var(--color-border);
+    background: color-mix(in oklab, var(--color-background) 85%, transparent);
+  }
+
+  .ds-nav-link {
+    @apply text-sm font-medium transition-colors;
+    color: var(--color-foreground-muted);
+  }
+
+  .ds-nav-link:hover,
+  .ds-nav-link.active {
+    color: var(--color-foreground);
+  }
+
+  /* Logo */
+  .ds-logo-mark {
+    @apply inline-flex h-8 w-8 items-center justify-center rounded-xl text-[10px] font-extrabold uppercase tracking-[0.2em];
+    color: #000;
+    background: linear-gradient(135deg, var(--color-primary), var(--color-primary-hover));
+  }
+
+  /* Typography */
+  .ds-display {
+    @apply text-5xl font-extrabold leading-tight tracking-tight sm:text-6xl lg:text-7xl;
+    color: var(--color-foreground);
+  }
+
+  .ds-heading-lg {
+    @apply text-4xl font-bold leading-tight tracking-tight sm:text-5xl;
+    color: var(--color-foreground);
+  }
+
+  .ds-heading-md {
+    @apply text-3xl font-bold leading-tight tracking-tight sm:text-4xl;
+    color: var(--color-foreground);
+  }
+
+  .ds-heading-sm {
+    @apply text-2xl font-semibold leading-tight tracking-tight;
+    color: var(--color-foreground);
+  }
+
+  .ds-body {
+    @apply text-base leading-relaxed;
+    color: var(--color-foreground-muted);
+  }
+
+  .ds-body-sm {
+    @apply text-sm leading-relaxed;
+    color: var(--color-foreground-muted);
+  }
+
+  .ds-kicker {
+    @apply text-[11px] font-semibold uppercase tracking-[0.2em];
+    color: var(--color-primary);
+  }
+
+  .ds-muted {
+    color: var(--color-foreground-muted);
+  }
+
+  /* Cards & Panels */
+  .ds-card {
+    @apply rounded-2xl border;
+    border-color: var(--color-border);
+    background: var(--color-surface);
+  }
+
+  .ds-card-elevated {
+    @apply rounded-2xl border;
+    border-color: var(--color-border-light);
+    background: var(--color-surface-elevated);
+  }
+
+  .ds-panel {
+    @apply rounded-3xl border;
+    border-color: var(--color-border);
+    background: var(--color-surface);
+  }
+
+  /* Buttons */
+  .ds-btn {
+    @apply inline-flex items-center justify-center rounded-full px-6 py-3 text-sm font-semibold transition-all duration-200;
+  }
+
+  .ds-btn-primary {
+    @apply ds-btn;
+    color: #000;
+    background: var(--color-primary);
+    box-shadow: var(--shadow-glow-primary);
+  }
+
+  .ds-btn-primary:hover {
+    background: var(--color-primary-hover);
+    transform: translateY(-1px);
+    box-shadow: 0 0 32px rgba(190, 242, 100, 0.35);
+  }
+
+  .ds-btn-secondary {
+    @apply ds-btn border;
+    color: var(--color-foreground);
+    border-color: var(--color-border-light);
+    background: transparent;
+  }
+
+  .ds-btn-secondary:hover {
+    border-color: var(--color-primary);
+    background: color-mix(in oklab, var(--color-primary) 8%, transparent);
+  }
+
+  .ds-btn-ghost {
+    @apply ds-btn;
+    color: var(--color-foreground-muted);
+    background: transparent;
+  }
+
+  .ds-btn-ghost:hover {
+    color: var(--color-foreground);
+    background: color-mix(in oklab, var(--color-surface) 50%, transparent);
+  }
+
+  .ds-btn-sm {
+    @apply px-4 py-2 text-xs;
+  }
+
+  /* Inputs */
+  .ds-input {
+    @apply w-full rounded-xl border px-4 py-3 text-sm outline-none transition-all duration-200;
+    color: var(--color-foreground);
+    border-color: var(--color-border-light);
+    background: var(--color-surface);
+  }
+
+  .ds-input::placeholder {
+    color: var(--color-foreground-muted);
+  }
+
+  .ds-input:focus {
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 3px color-mix(in oklab, var(--color-primary) 20%, transparent);
+  }
+
+  /* Chips & Badges */
+  .ds-chip {
+    @apply inline-flex items-center rounded-full border px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.15em];
+    color: var(--color-primary);
+    border-color: color-mix(in oklab, var(--color-primary) 40%, transparent);
+    background: color-mix(in oklab, var(--color-primary) 10%, transparent);
+  }
+
+  /* Stats */
+  .ds-stat {
+    @apply text-center;
+  }
+
+  .ds-stat-value {
+    @apply text-3xl font-black;
+    color: var(--color-foreground);
+  }
+
+  .ds-stat-label {
+    @apply text-xs font-medium;
+    color: var(--color-foreground-muted);
   }
 }
 
@@ -49,8 +262,26 @@
     white-space: nowrap;
     border-width: 0;
   }
+
+  /* Gradient text */
+  .text-gradient-primary {
+    background: linear-gradient(135deg, var(--color-primary), var(--color-primary-hover));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  /* Glow effects */
+  .glow-primary {
+    box-shadow: var(--shadow-glow-primary);
+  }
+
+  .glow-blue {
+    box-shadow: var(--shadow-glow-blue);
+  }
 }
 
+/* Responsive utilities */
 @media (min-width: 1024px) {
   .lg\:hidden { display: none !important; }
   .lg\:flex { display: flex !important; }

@@ -3,14 +3,14 @@
 <header class="mb-8 sm:mb-10 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6">
   <div>
     <div class="flex items-center gap-2 mb-2">
-      <span class="inline-flex items-center rounded-full bg-emerald-50 px-2 py-0.5 text-[10px] font-medium text-emerald-700 border border-emerald-100 uppercase tracking-wider">Highlights</span>
-      <span class="text-[10px] font-medium uppercase text-slate-500 tracking-wider"><%= pluralize(@notes.size, 'Key Point') %></span>
+      <span class="inline-flex items-center rounded-full bg-emerald-500/10 px-2 py-0.5 text-[10px] font-medium border border-emerald-500/30 uppercase tracking-wider" style="color: #bbf7d0;">Highlights</span>
+      <span class="text-[10px] font-medium uppercase tracking-wider" style="color: #94a3b8;"><%= pluralize(@notes.size, 'Key Point') %></span>
     </div>
-    <h1 class="text-2xl sm:text-3xl font-semibold text-slate-900 tracking-tight">Expert Analysis</h1>
-    <p class="mt-1 text-sm text-slate-600"><%= @material.title %></p>
+    <h1 class="text-2xl sm:text-3xl font-semibold text-white tracking-tight">Expert Analysis</h1>
+    <p class="mt-1 text-sm" style="color: #94a3b8;"><%= @material.title %></p>
   </div>
   <div class="flex-shrink-0">
-    <%= link_to material_path(@material), class: "inline-flex items-center justify-center gap-2 rounded-full border border-slate-200 px-4 py-2 text-xs font-semibold text-slate-700 hover:border-slate-900 hover:text-slate-900 w-full sm:w-auto" do %>
+    <%= link_to material_path(@material), class: "inline-flex items-center justify-center gap-2 rounded-full border border-[#1f2937] px-4 py-2 text-xs font-semibold hover:border-[#bef264] hover:text-[#bef264] bg-[#09090b] transition-colors w-full sm:w-auto" do %>
       <span>Back</span>
     <% end %>
   </div>
@@ -22,9 +22,9 @@
       <%= render partial: "materials/note", collection: @notes, as: :note %>
     </div>
   <% else %>
-    <div class="py-16 flex flex-col items-center justify-center border border-dashed border-slate-200 rounded-2xl text-center bg-white">
-      <h3 class="text-lg font-semibold text-slate-900 mb-2">No insights yet</h3>
-      <p class="text-slate-600 text-sm max-w-xs leading-relaxed px-6">Start a study session and ask the AI to summarize this material to see highlights here.</p>
+    <div class="py-16 flex flex-col items-center justify-center border border-dashed border-[#1f2937] rounded-2xl text-center bg-[#09090b]">
+      <h3 class="text-lg font-semibold text-white mb-2">No insights yet</h3>
+      <p class="text-sm max-w-xs leading-relaxed px-6" style="color: #94a3b8;">Start a study session and ask the AI.</p>
     </div>
   <% end %>
 </div>

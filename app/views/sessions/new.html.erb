@@ -1,53 +1,58 @@
 <% content_for :title, "Sign in | StudyWISE" %>
 
-<div class="flex flex-col items-center justify-center px-4 pb-20 bg-slate-50/30">
+<div class="flex flex-col items-center justify-center px-4 pb-20 pt-10">
   <div class="w-full max-w-md sm:max-w-xl">
     <div class="text-center mb-10 sm:mb-12">
-      <h1 class="text-2xl sm:text-3xl font-semibold text-slate-900 mb-2 tracking-tight">Welcome back</h1>
+      <h1 class="text-2xl sm:text-3xl font-semibold text-white mb-2 tracking-tight">Welcome back</h1>
     </div>
 
-    <div class="bg-white border border-slate-200 rounded-3xl p-8 sm:p-10 shadow-sm relative overflow-hidden">
+    <div class="bg-[#09090b] border border-[#1f2937] rounded-3xl p-8 sm:p-10 shadow-lg relative overflow-hidden">
       <%= form_with url: login_path, class: "relative z-10 space-y-6" do |f| %>
         <div class="space-y-2">
-          <%= f.label :email, class: "block text-[10px] sm:text-[11px] font-semibold uppercase text-slate-500 tracking-wider pl-1" %>
-          <%= f.email_field :email, required: true, 
+          <%= f.label :email, class: "block text-[10px] sm:text-[11px] font-semibold uppercase tracking-wider pl-1", style: "color: #94a3b8;" %>
+          <%= f.email_field :email, required: true,
               placeholder: "you@example.com",
-              class: "w-full px-5 py-3 bg-white border border-slate-200 rounded-xl text-sm font-medium text-slate-900 focus:outline-none focus:border-slate-900 focus:ring-4 focus:ring-slate-900/5 transition-all shadow-sm" 
+              class: "w-full px-5 py-3 bg-[#111113] border border-[#374151] rounded-xl text-sm font-medium text-white placeholder-[#94a3b8] focus:outline-none focus:border-[#bef264] focus:ring-4 focus:ring-[#bef264]/20 transition-all",
+              style: "background-color: #111113 !important; -webkit-text-fill-color: #ffffff !important;"
           %>
         </div>
 
         <div class="space-y-2">
           <div class="flex items-center justify-between pl-1">
-            <%= f.label :password, class: "block text-[10px] sm:text-[11px] font-semibold uppercase text-slate-500 tracking-wider" %>
+            <%= f.label :password, class: "block text-[10px] sm:text-[11px] font-semibold uppercase tracking-wider", style: "color: #94a3b8;" %>
           </div>
-          <%= f.password_field :password, required: true, 
+          <%= f.password_field :password, required: true,
               placeholder: "Enter your password",
-              class: "w-full px-5 py-3 bg-white border border-slate-200 rounded-xl text-sm font-medium text-slate-900 focus:outline-none focus:border-slate-900 focus:ring-4 focus:ring-slate-900/5 transition-all shadow-sm" 
+              class: "w-full px-5 py-3 bg-[#111113] border border-[#374151] rounded-xl text-sm font-medium text-white placeholder-[#94a3b8] focus:outline-none focus:border-[#bef264] focus:ring-4 focus:ring-[#bef264]/20 transition-all",
+              style: "background-color: #111113 !important; -webkit-text-fill-color: #ffffff !important;"
           %>
         </div>
 
         <div class="pt-4">
-          <%= f.submit "Sign into StudyWISE", 
-              class: "w-full py-3 bg-slate-900 text-white rounded-full font-semibold text-[13px] tracking-tight hover:bg-black transition-all shadow-sm cursor-pointer" 
+          <%= f.submit "Sign into StudyWISE",
+              class: "w-full py-3 bg-[#bef264] text-black rounded-full font-semibold text-[13px] tracking-tight hover:bg-[#a3e635] transition-all shadow-[0_0_24px_rgba(190,242,100,0.3)] cursor-pointer"
           %>
         </div>
       <% end %>
 
       <% if google_oauth_enabled? %>
         <div class="relative z-10 my-6 flex items-center">
-          <div class="h-px flex-1 bg-slate-200"></div>
-          <span class="px-3 text-[10px] font-semibold uppercase tracking-wider text-slate-500">or</span>
-          <div class="h-px flex-1 bg-slate-200"></div>
+          <div class="h-px flex-1 bg-[#1f2937]"></div>
+          <span class="px-3 text-[10px] font-semibold uppercase tracking-wider" style="color: #94a3b8;">or</span>
+          <div class="h-px flex-1 bg-[#1f2937]"></div>
         </div>
-        <%= button_to "/auth/google_oauth2", method: :post, data: { turbo: false }, class: "relative z-10 w-full inline-flex items-center justify-center gap-2 rounded-full border border-slate-200 bg-white py-3 text-[13px] font-semibold text-slate-700 hover:border-slate-900 hover:text-slate-900 transition-all shadow-sm" do %>
-          <span>Continue with Google</span>
+        <%= button_to "/auth/google_oauth2", method: :post, data: { turbo: false }, class: "relative z-10 w-full inline-flex items-center justify-center gap-2 rounded-full border border-[#1f2937] bg-[#09090b] py-3 text-[13px] font-semibold hover:border-[#bef264] hover:text-[#bef264] transition-all" do %>
+          <svg class="h-5 w-5" viewBox="0 0 24 24">
+            <path fill="currentColor" d="M12.48 10.92v3.28h7.84c-.24 1.84-.853 3.187-1.787 4.133-1.147 1.147-2.933 2.4-6.053 2.4-4.827 0-8.6-3.893-8.6-8.72s3.773-8.72 8.6-8.72c2.6 0 4.507 1.027 5.907 2.347l2.307-2.307C18.747 1.44 16.133 0 12.48 0 5.867 0 .307 5.387.307 12s5.56 12 12.173 12c3.573 0 6.267-1.173 8.373-3.36 2.16-2.16 2.84-5.213 2.84-7.667 0-.76-.053-1.467-.173-2.053H12.48z"/>
+          </svg>
+          <span style="color: #e2e8f0;">Continue with Google</span>
         <% end %>
       <% end %>
     </div>
 
-    <p class="mt-8 text-center text-sm font-medium text-slate-500">
-      New to StudyWISE? 
-      <%= link_to "Create a free account", signup_path, class: "text-slate-900 font-semibold hover:underline ml-1" %>
+    <p class="mt-8 text-center text-sm font-medium" style="color: #94a3b8;">
+      New to StudyWISE?
+      <%= link_to "Create a free account", signup_path, class: "font-semibold hover:text-[#bef264] ml-1", style: "color: #e2e8f0;" %>
     </p>
   </div>
 </div>
