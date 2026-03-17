@@ -4,7 +4,7 @@ module Study
       description "Retrieve the most relevant chunks from the material.
         Use question to rank context by similarity to the user's query."
       param :question, desc: "The question needing context."
-      param :limit, desc: "How many chunks to return.", default: 3
+      param :limit, desc: "How many chunks to return."
 
       def initialize(material:)
         @material = material

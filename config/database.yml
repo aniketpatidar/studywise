@@ -15,7 +15,7 @@
 default: &default
   adapter: postgresql
   encoding: unicode
-  host: <%= ENV.fetch("DB_HOST", "127.0.0.1") %>
+  host: <%= ENV.fetch("DB_HOST", ENV.fetch("DATABASE_URL", nil) ? nil : "127.0.0.1") %>
   port: <%= ENV.fetch("DB_PORT", 5432) %>
   username: <%= ENV.fetch("DB_USER", "postgres") %>
   password: <%= ENV.fetch("DB_PASSWORD", "postgres") %>
@@ -86,8 +86,9 @@ production:
   primary: &primary_production
     <<: *default
     database: studywise_production
-    username: studywise
+    username: <%= ENV.fetch("DB_USER", ENV.fetch("DATABASE_URL", nil) ? nil : "studywise") %>
     password: <%= ENV["STUDYWISE_DATABASE_PASSWORD"] %>
+    url: <%= ENV["DATABASE_URL"] %>
   cache:
     <<: *primary_production
     database: studywise_production_cache
