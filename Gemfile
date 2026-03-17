@@ -1,7 +1,7 @@
 source "https://rubygems.org"
 
 # Bundle edge Rails instead: gem "rails", github: "rails/rails", branch: "main"
-gem "rails", "~> 8.0.4"
+gem "rails", "~> 8.1.2"
 gem "friendly_id", "~> 5.5"
 gem "pundit", "~> 2.3"
 gem "omniauth", "~> 2.1"
